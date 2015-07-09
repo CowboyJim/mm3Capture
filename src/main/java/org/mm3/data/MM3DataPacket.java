@@ -1,4 +1,4 @@
-package org.mm3.serialdata;
+package org.mm3.data;
 
 /**
  * Created with IntelliJ IDEA.
