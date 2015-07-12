@@ -1,6 +1,6 @@
 package org.mm3.data;
 
-import org.mm3.util.ByteArrayQueue;
+import org.mm3.util.ByteRingBuffer;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -8,14 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ByteStreamParser {
 
-    protected static ByteArrayQueue buffer = new ByteArrayQueue(256);
+    protected static ByteRingBuffer buffer = new ByteRingBuffer(256);
 
-    private static byte syncByte_1 = 0x0A;
-    private static byte syncByte_2 = 0x05;
-    //private static byte synchByteArray[] = new byte[]{syncByte_1, syncByte_2};
-
+    private static final byte syncByte_1 = 0x0A;
+    private static final byte syncByte_2 = 0x05;
+    private static final int EKG_PACKET_SIZE = 39;
     protected byte currentSyncByte = -1;
-
 
     @Autowired
     protected PacketReceivedCallback callback;
@@ -29,13 +27,14 @@ public class ByteStreamParser {
      */
     public void bytesReceived(byte[] bytes) {
 
-        MM3DataPacket packet;
+        // Write packet to buffer
+        buffer.write(bytes);
 
-        buffer.add(bytes);
+        // Send packets to listeners until the buffer has no more packets
+        while (buffer.getUsed() > 0) {
 
-        while (buffer.length() > 0) {
-
-            if ((packet = findPacket()) == null) {
+            MM3DataPacket packet;
+            if ((packet = getEKGPacket()) == null) {
                 return;
             } else {
                 callback.packetReceived(packet);
@@ -43,42 +42,87 @@ public class ByteStreamParser {
         }
     }
 
-    protected MM3DataPacket findPacket() {
-        SyncByteData xxx = findNextScanByteIndex();
+    /**
+     *
+     *
+     * @return
+     */
+    protected MM3DataPacket getEKGPacket() {
 
-        return null;
-    }
-
-    protected SyncByteData findNextScanByteIndex() {
-        int index0_1 = -1, index1_1 = -1, index0_2 = -1, index1_2 = -1;
-        SyncByteData syncByteData = null;
-
-        if (currentSyncByte == -1) {
-            syncByteData = this.findInitialSyncByte();
-            currentSyncByte = syncByteData.syncByte;
-
-        } else {
-
-            int index = indexOf(0, currentSyncByte);
-            syncByteData = new SyncByteData(index, getNextSyncByte(currentSyncByte));
+        // All data packet are 39 bytes. We cannot sync until the buffer has filled with sufficient data
+        if (buffer.getUsed() < EKG_PACKET_SIZE) {
+            return null;
         }
 
+        if (!isSyncedToBuffer()) {
+            return null;
+        }
+        int packetLength = buffer.getByteAt(1);
 
-        return syncByteData;
+        if (packetLength != EKG_PACKET_SIZE) {
+            buffer.discard(packetLength);
+            currentSyncByte = flipSyncByte(currentSyncByte);
+            return null;
+        }
+
+        // Read the EKG packet data from the buffer and flip the sync byte
+        byte packetByteArray[] = new byte[packetLength + 1];
+        buffer.read(packetByteArray);
+        currentSyncByte = flipSyncByte(currentSyncByte);
+
+        return new MM3DataPacket(packetByteArray);
     }
 
-    private SyncByteData findInitialSyncByte() {
+    /**
+     * @return
+     */
+    protected boolean isSyncedToBuffer() {
+        if (currentSyncByte == -1) {
+
+            // All data packet are 39 bytes. We cannot sync until the buffer has filled with sufficient data
+            if (buffer.getUsed() < EKG_PACKET_SIZE) {
+                return false;
+            }
+
+            int syncIndex = findInitialSyncByteIndex();
+            if (syncIndex != -1) {
+                if (isValidPacketFound(syncIndex)) {
+                    currentSyncByte = buffer.getByteAt(syncIndex);
+                    // Throw away the incomplete bytes at the head of the buffer
+                    buffer.discard(syncIndex);
+                    return true;
+                }
+            }
+        }
+        return true;
+    }
+
+    protected boolean isValidPacketFound(int syncByteIndex) {
+
+        // Don't proceed unless we find a sync byte
+        if (syncByteIndex == -1) return false;
+        int len = buffer.getByteAt(syncByteIndex + 1);
+        if (len == 0) return false;
+
+        byte foundSyncByte = buffer.getByteAt(syncByteIndex);
+        byte syncByte = buffer.getByteAt(syncByteIndex + len);
+        return syncByte == flipSyncByte(foundSyncByte);
+    }
+
+    /**
+     * @return
+     */
+    private int findInitialSyncByteIndex() {
         int index0_1;
         int index0_2;
         int index1_1;
         int index1_2;
-        byte syncByte = 0;
-        int byteIndex = 0;
+        int byteIndex = -1;
 
-        index0_1 = indexOf(0, syncByte_1);
-        index0_2 = indexOf(index0_1 + 1, syncByte_1);
-        index1_1 = indexOf(0, syncByte_1);
-        index1_2 = indexOf(index1_1 + 1, syncByte_1);
+        index0_1 = buffer.indexOf(syncByte_1);
+        index0_2 = buffer.indexOf(syncByte_1, index0_1 + 1);
+        index1_1 = buffer.indexOf(syncByte_2);
+        index1_2 = buffer.indexOf(syncByte_2, index1_1 + 1);
 
         boolean id0_1_valid = validSyncByte(index0_1, syncByte_1);
         boolean id0_2_valid = validSyncByte(index0_2, syncByte_1);
@@ -87,19 +131,14 @@ public class ByteStreamParser {
 
         if (id0_1_valid) {
             byteIndex = index0_1;
-            syncByte = 0x0A;
         } else if (id0_2_valid) {
             byteIndex = index0_2;
-            syncByte = 0x0A;
         } else if (id1_1_valid) {
             byteIndex = index1_1;
-            syncByte = 0x05;
         } else if (id1_2_valid) {
             byteIndex = index1_2;
-            syncByte = 0x05;
         }
-
-        return new SyncByteData(byteIndex, syncByte);
+        return byteIndex;
     }
 
     /**
@@ -116,43 +155,16 @@ public class ByteStreamParser {
      */
     protected boolean validSyncByte(int index, byte syncByte) {
 
-        if (index == -1) {
-            return false;
-        }
-        int packetLength = buffer.array()[index + 1];
-        int nextSyncByte = buffer.array()[index + packetLength];
+        if (index == -1) return false;
 
-        return nextSyncByte == getNextSyncByte(syncByte);
+        int packetLength = buffer.getByteAt(index + 1);
+        int nextSyncByte = buffer.getByteAt(index + packetLength);
+
+        if (nextSyncByte == -1) return false;
+        return nextSyncByte == flipSyncByte(syncByte);
     }
 
-    protected byte getNextSyncByte(byte syncByte) {
-        if (syncByte == syncByte_1) {
-            return syncByte_2;
-        }
-        return syncByte_1;
+    protected byte flipSyncByte(byte syncByte) {
+        return (syncByte == syncByte_1) ? syncByte_2 : syncByte_1;
     }
-
-    protected int indexOf(int offset, byte syncByte) {
-        int index = -1;
-        byte bufferArray[] = buffer.array();
-
-        for (int i = buffer.offset(); i < buffer.length(); i++) {
-            if (bufferArray[i] == syncByte) {
-                return i;
-            }
-        }
-        return index;
-    }
-
-    class SyncByteData {
-        public int index;
-        public byte syncByte;
-
-        public SyncByteData(int index, byte syncByte) {
-            this.index = index;
-            this.syncByte = syncByte;
-        }
-    }
-
-
 }

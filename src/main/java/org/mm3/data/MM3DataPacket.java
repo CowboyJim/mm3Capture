@@ -5,13 +5,12 @@ package org.mm3.data;
  * User: CowboyJim
  * Date: 7/7/15
  * Time: 2:45 PM
- * To change this template use File | Settings | File Templates.
  */
 public class MM3DataPacket {
 
+    protected byte[] packetData;
 
-    public MM3DataPacket() {
-
-
+    public MM3DataPacket(byte[] packetData) {
+       this.packetData = packetData;
     }
 }
