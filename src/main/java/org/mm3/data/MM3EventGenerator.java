@@ -14,18 +14,18 @@ import javax.annotation.PostConstruct;
 /**
  * Created by CowboyJim on 7/8/15.
  */
-public class MM3EventGenerator extends AbstractEventGenerator {
+public class MM3EventGenerator extends BaseEventGenerator {
 
     protected Logger LOG = LoggerFactory.getLogger(MM3EventGenerator.class);
-
 
     protected SerialPort serialPort;
 
     @Autowired
     protected SerialPortConfig serialConfig;
 
-    @Autowired
-    protected ByteStreamParser byteStreamParser;
+    public MM3EventGenerator(DataParser parser) {
+        super(parser);
+    }
 
     @PostConstruct
     public void connectToSerialPort() throws SerialPortException {
@@ -44,7 +44,6 @@ public class MM3EventGenerator extends AbstractEventGenerator {
 
         serialPort.setEventsMask(SerialPort.MASK_RXCHAR);
         serialPort.addEventListener(new SerialPortStreamReader());
-
     }
 
     /**
@@ -60,7 +59,7 @@ public class MM3EventGenerator extends AbstractEventGenerator {
             //Process data if it is available
             if (event.isRXCHAR()) {
                 try {
-                    byteStreamParser.bytesReceived(serialPort.readBytes(event.getEventValue()));
+                    parser.parseData(serialPort.readBytes(event.getEventValue()));
 
                 } catch (SerialPortException ex) {
                     LOG.error("SerialPortException", ex);
@@ -68,6 +67,4 @@ public class MM3EventGenerator extends AbstractEventGenerator {
             }
         }
     }
-
-
 }

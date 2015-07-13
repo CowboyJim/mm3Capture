@@ -1,8 +1,10 @@
 package org.mm3.data;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -13,9 +15,27 @@ import java.io.IOException;
  * Date: 7/12/15
  * Time: 11:25 AM
  */
-public class FileBasedEventGenerator extends AbstractEventGenerator {
+public class FileBasedEventGenerator extends BaseEventGenerator {
+
+    protected Logger LOG = LoggerFactory.getLogger(FileBasedEventGenerator.class);
+
+    public static final int PACKET_SIZE = 39;
 
     protected String fileName;
+
+    protected int playbackFrequency = 500;
+
+    public FileBasedEventGenerator(DataParser parser) {
+        super(parser);
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
 
     public int getPlaybackFrequency() {
         return playbackFrequency;
@@ -25,32 +45,42 @@ public class FileBasedEventGenerator extends AbstractEventGenerator {
         this.playbackFrequency = playbackFrequency;
     }
 
-    protected int playbackFrequency = 500;
-
-    public FileBasedEventGenerator(String fileName) {
-        this.fileName = fileName;
-    }
-
     public void play() throws IOException {
-
-        Runnable playbackTask;
-
-
-        playbackTask = () -> {
-
-        };
-
-    }
-
-    protected Runnable filePlaybackExecutor() throws IOException{
 
         File file = new File(fileName);
         byte bFile[] = new byte[(int) file.length()];
         FileInputStream fin = new FileInputStream(file);
         fin.read(bFile);
 
+        Runnable filePlaybackExecutor = () -> {
 
-        return null;
+            byte[] bufPacket = new byte[PACKET_SIZE];
+            int bFilePosition = 0;
+            int bFileLength = bFile.length;
+            boolean bFileEmpty = false;
+            int size = PACKET_SIZE;
+
+            while (!bFileEmpty) {
+
+                if ((bFileLength - bFilePosition) < PACKET_SIZE) {
+                    size = bFileLength - bFilePosition;
+                    bFileEmpty = true;
+                }
+                System.arraycopy(bFile, bFilePosition, bufPacket, 0, size);
+                bFilePosition += PACKET_SIZE;
+
+                this.notifyObservers(bufPacket);
+
+                try {
+                    Thread.sleep(playbackFrequency);
+                } catch (InterruptedException e) {
+                    LOG.error("Thread Interrupted", e);
+                }
+            }
+        };
+
+        new Thread(filePlaybackExecutor).start();
+
     }
 
 

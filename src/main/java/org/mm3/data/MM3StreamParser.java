@@ -6,45 +6,47 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * Created by CowboyJim on 7/8/15.
  */
-public class ByteStreamParser {
+public class MM3StreamParser implements DataParser {
 
     protected static ByteRingBuffer buffer = new ByteRingBuffer(256);
 
     private static final byte syncByte_1 = 0x0A;
     private static final byte syncByte_2 = 0x05;
+    /**
+     * All EKG data packet are 39 bytes.
+     */
     private static final int EKG_PACKET_SIZE = 39;
     protected byte currentSyncByte = -1;
 
     @Autowired
-    protected PacketReceivedCallback callback;
+    protected MM3PacketListener listener;
 
-    public void setCallback(PacketReceivedCallback callback) {
-        this.callback = callback;
+    @Override
+    public void setPacketListener(MM3PacketListener listener) {
+        this.listener = listener;
     }
 
     /**
      * @param bytes
      */
-    public void bytesReceived(byte[] bytes) {
+    public void parseData(byte[] bytes) {
 
         // Write packet to buffer
         buffer.write(bytes);
 
-        // Send packets to listeners until the buffer has no more packets
+        // Send packets to listener until the buffer has no more packets
         while (buffer.getUsed() > 0) {
 
             MM3DataPacket packet;
             if ((packet = getEKGPacket()) == null) {
                 return;
             } else {
-                callback.packetReceived(packet);
+                listener.packetReceived(packet);
             }
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     protected MM3DataPacket getEKGPacket() {

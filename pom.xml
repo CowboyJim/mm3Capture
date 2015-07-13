@@ -14,7 +14,7 @@ This is a minimal configuration for a JavaFX 8 maven project.
         <!-- The final name for the JAR that you can find in target directory-->
         <jar.final.name>mm3ui-app</jar.final.name>
         <!--  the default class that has the public static void main(String[]) method -->
-        <main.class>org.mm3.Main</main.class>
+        <main.class>org.mm3.MainApp</main.class>
     </properties>
     <dependencies>
         <dependency>

@@ -5,43 +5,43 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.util.Callback;
 
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
  * Created with IntelliJ IDEA.
- * User: nbt86yz
+ * User: CowboyJim
  * Date: 7/7/15
- * Time: 3:06 PM
- * To change this template use File | Settings | File Templates.
  */
-public class SpringFxmlLoader {
+public class SpringFxmlLoader implements ApplicationContextAware {
     private ApplicationContext context;
 
-    public SpringFxmlLoader(ApplicationContext context)
-    {
-        this.context = context;
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.context = applicationContext;
     }
 
-    public Object load(String url, Class<?> controllerClass) throws IOException
-    {
+    public Object load(String url, Class<?> controllerClass) throws IOException {
         InputStream fxmlStream = null;
-        try
-        {
-            fxmlStream = controllerClass.getResourceAsStream(url);
-            Object instance = context.getBean(controllerClass);
-            FXMLLoader loader = new FXMLLoader();
-            loader.getNamespace().put("controller", instance);
-            return loader.load(fxmlStream);
-        }
-        finally
-        {
-            if (fxmlStream != null)
-            {
+        try {
+            fxmlStream = context.getResource("classpath:" + url).getInputStream();
+            Object controller = context.getBean(controllerClass);
+            FXMLLoader loader = context.getBean(FXMLLoader.class);
+            loader.setController(controller);
+            Object fxml =  loader.load(fxmlStream);
+            ((Initializable)controller).initialize(null,null);
+            return fxml;
+
+        } finally {
+            if (fxmlStream != null) {
                 fxmlStream.close();
             }
         }
     }
+
 }

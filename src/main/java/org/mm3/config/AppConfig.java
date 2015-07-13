@@ -1,9 +1,13 @@
 package org.mm3.config;
 
+import javafx.fxml.FXMLLoader;
 import jssc.SerialPort;
+import org.mm3.SpringFxmlLoader;
+import org.mm3.view.CaptureTableViewController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 /**
  * Created with IntelliJ IDEA.
@@ -43,4 +47,21 @@ public class AppConfig {
 
         return config;
     }
+
+    @Bean
+    public CaptureTableViewController getCaptureTableViewController() {
+        return new CaptureTableViewController();
+    }
+
+    @Bean
+    public SpringFxmlLoader getSpringFxmlLoader() {
+        return new SpringFxmlLoader();
+    }
+
+    @Bean
+    @Scope(value = "prototype")
+    public FXMLLoader getFXMLLoader(){
+        return new FXMLLoader();
+    }
+
 }

@@ -2,7 +2,10 @@ package org.mm3.serialdata;
 
 import jssc.SerialPortException;
 import org.mm3.config.SerialPortConfig;
+import org.mm3.data.MM3DataPacket;
 import org.mm3.data.MM3EventGenerator;
+import org.mm3.data.MM3PacketListener;
+import org.mm3.data.MM3StreamParser;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -11,20 +14,23 @@ import org.testng.annotations.Test;
  */
 
 @Test
-public class MM3EventGeneratorTest {
+public class MM3EventGeneratorTest implements MM3PacketListener {
 
 
     protected MM3EventGenerator mm3EventGenerator;
     protected SerialPortConfig serialPortConfig;
-
+    MM3StreamParser parser;
 
     @BeforeTest
     public void setup() {
-        mm3EventGenerator = new MM3EventGenerator();
+
+        parser = new MM3StreamParser();
+        parser.setPacketListener(this);
+        mm3EventGenerator = new MM3EventGenerator(parser);
         serialPortConfig = new SerialPortConfig();
     }
 
-    @Test
+    @Test(enabled = false)
     public void testConnectToSerialPort() {
 
 
@@ -48,4 +54,8 @@ public class MM3EventGeneratorTest {
 
     }
 
+    @Override
+    public void packetReceived(MM3DataPacket packet) {
+
+    }
 }

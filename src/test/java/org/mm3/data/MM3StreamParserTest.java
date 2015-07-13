@@ -1,6 +1,5 @@
 package org.mm3.data;
 
-import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -9,7 +8,7 @@ import static org.testng.Assert.*;
 /**
  * Created by CowbyJim on 7/8/15.
  */
-public class ByteStreamParserTest {
+public class MM3StreamParserTest {
 
     final byte testData[] =
             {(byte) 0x3f, (byte) 0x0a, (byte) 0x0d, (byte) 0x3f, (byte) 0x31, (byte) 0x32, (byte) 0x33, (byte) 0x34, (byte) 0x35, (byte) 0x36, (byte) 0x37, (byte) 0x0a, (byte) 0x0d, (byte) 0x53, (byte) 0x79, (byte) 0x73,
@@ -52,14 +51,14 @@ public class ByteStreamParserTest {
             (byte) 0xB3, (byte) 0xCC, (byte) 0xE9, (byte) 0xff, (byte) 0xff, (byte) 0xF1, (byte) 0xD8, (byte) 0xBF, (byte) 0x9A,
             0x60, (byte) 0x19, (byte) 0x03, (byte) 0x1C, (byte) 0x60, (byte) 0x9A, (byte) 0xB3, (byte) 0xCC, (byte) 0xE9, (byte) 0xff, (byte) 0xff, (byte) 0xF1,
             (byte) 0xD8, (byte) 0xBF, (byte) 0x9A, (byte) 0x60, (byte) 0x19};
-    protected ByteStreamParser byteStreamParser;
-    protected Callback callback;
+    protected MM3StreamParser MM3StreamParser;
+    protected PacketListener listener;
 
     @BeforeMethod
     public void setUp() throws Exception {
-        byteStreamParser = new ByteStreamParser();
-        callback = new Callback();
-        byteStreamParser.setCallback(callback);
+        MM3StreamParser = new MM3StreamParser();
+        listener = new PacketListener();
+        MM3StreamParser.setPacketListener(listener);
     }
 
     @Test
@@ -68,19 +67,22 @@ public class ByteStreamParserTest {
         for (int i = 0; i < testData.length; i++) {
             byte singleByteArray[] = new byte[1];
             singleByteArray[0] = testData[i];
-            byteStreamParser.bytesReceived(singleByteArray);
+            MM3StreamParser.parseData(singleByteArray);
         }
-        assertEquals(callback.count, 14);
+        assertEquals(listener.count, 14);
     }
 
 
-    class Callback implements PacketReceivedCallback {
+    class PacketListener implements MM3PacketListener {
 
         public int count;
 
         @Override
         public void packetReceived(MM3DataPacket packet) {
             count++;
+
+            System.out.println("packet received");
+           // super.packetReceived(packet);    //To change body of overridden methods use File | Settings | File Templates.
         }
     }
 }

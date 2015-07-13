@@ -5,7 +5,14 @@ import java.util.Observable;
 /**
  * Created by jim on 7/8/15.
  */
-public abstract class AbstractEventGenerator extends Observable implements PacketReceivedCallback {
+public class BaseEventGenerator extends Observable implements MM3PacketListener {
+
+   protected DataParser parser;
+
+    public BaseEventGenerator(DataParser parser) {
+        this.parser = parser;
+        parser.setPacketListener(this);
+    }
 
     /**
      * @param packet
@@ -14,6 +21,5 @@ public abstract class AbstractEventGenerator extends Observable implements Packe
         this.hasChanged();
         this.notifyObservers(packet);
     }
-
 
 }
