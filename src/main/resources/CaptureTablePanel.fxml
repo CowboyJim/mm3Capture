@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="800.0" prefWidth="1100.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="org.mm3.view.CaptureTablePanelController">
+  <children>
+    <GridPane>
+      <children>
+        <HBox prefHeight="38.0" prefWidth="400.0" spacing="10.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+          <fx:define>
+            <ToggleGroup fx:id="captureToggleGroup" />
+          </fx:define>
+          <children>
+            <Label text="Capture Control" />
+            <ToggleButton fx:id="startCaptureBtn" mnemonicParsing="false" text="Start Capture" toggleGroup="$captureToggleGroup" />
+            <ToggleButton fx:id="stopCaptureBtn" mnemonicParsing="false" selected="true" text="Stop Capture" toggleGroup="$captureToggleGroup" />
+            <ProgressBar fx:id="progressBar" disable="false" prefWidth="140.0" progress="-1.0" HBox.hgrow="NEVER">
+              <HBox.margin>
+                <Insets left="20.0" top="5.0" />
+              </HBox.margin>
+            </ProgressBar>
+            <Separator orientation="VERTICAL" prefHeight="200.0" />
+          </children>
+          <padding>
+            <Insets bottom="5.0" left="20.0" right="5.0" top="5.0" />
+          </padding>
+        </HBox>
+        <HBox alignment="CENTER_RIGHT" prefHeight="38.0" prefWidth="400.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+          <children>
+            <Label text="Captured Data" />
+            <Button fx:id="clearDataBtn" mnemonicParsing="false" text="Clear Data" />
+            <Button fx:id="saveDataBtn" mnemonicParsing="false" text="Save Data" />
+          </children>
+          <padding>
+            <Insets bottom="5.0" left="5.0" right="20.0" top="5.0" />
+          </padding>
+        </HBox>
+      </children>
+      <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+      </columnConstraints>
+      <rowConstraints>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      </rowConstraints>
+    </GridPane>
+    <TableView fx:id="ekgDataTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="513.0" prefWidth="800.0">
+      <columns>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="A" fx:id="sequence" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="B" fx:id="lEmg" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="C" fx:id="lCh1" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="D" fx:id="lCh2" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="E" fx:id="lCh3" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="F" fx:id="lCh4" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="G" fx:id="lCh5" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="H" fx:id="lCh6" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="I" fx:id="lCh7" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="J" fx:id="lCh8" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="K" fx:id="lCh9" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="L" fx:id="lCh10" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="M" fx:id="lCh11" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="M" fx:id="lCh12" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="O" fx:id="lCh13" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="P" fx:id="lCh14" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="Q" fx:id="rEmg" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="R" fx:id="rCh1" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="S" fx:id="rCh2" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="T" fx:id="rCh3" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="U" fx:id="rCh4" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="V" fx:id="rCh5" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="W" fx:id="rCh6" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="X" fx:id="rCh7" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="Y" fx:id="rCh8" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="Z" fx:id="rCh9" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="AA" fx:id="rCh10" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="AB" fx:id="rCh11" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="AC" fx:id="rCh12" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="AD" fx:id="rCh13" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="AE" fx:id="rCh14" />
+      </columns>
+    </TableView>
+  </children>
+</VBox>

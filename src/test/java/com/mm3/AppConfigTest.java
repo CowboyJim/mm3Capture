@@ -26,7 +26,7 @@ public class AppConfigTest {
         String portId;
 
         appConfig = new AppConfig();
-        SerialPortConfig serialPortConfig = appConfig.getSerialPortConfig();
+        SerialPortConfig serialPortConfig = appConfig.SerialPortConfig();
 
         if (serialPortConfig.portID.contains("mac")) {
             assertEquals(serialPortConfig.portID, "/dev/tty.usbserial");
@@ -36,7 +36,7 @@ public class AppConfigTest {
 
         System.setProperty("com_port", "/tty_someport");
         appConfig = new AppConfig();
-        assertEquals(appConfig.getSerialPortConfig().portID, "/tty_someport");
+        assertEquals(appConfig.SerialPortConfig().portID, "/tty_someport");
 
     }
 }

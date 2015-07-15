@@ -17,7 +17,8 @@ public class FileBasedEventGeneratorTest implements MM3PacketListener {
     public void setUp() throws Exception {
         parser = new MM3StreamParser();
         parser.setPacketListener(this);
-        generator = new FileBasedEventGenerator(parser);
+        generator = new FileBasedEventGenerator();
+        generator.setParser(parser);
     }
 
     @Test

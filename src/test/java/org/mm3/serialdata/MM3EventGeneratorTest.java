@@ -9,6 +9,8 @@ import org.mm3.data.MM3StreamParser;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import java.util.Properties;
+
 /**
  * Created by jim on 7/8/15.
  */
@@ -26,8 +28,9 @@ public class MM3EventGeneratorTest implements MM3PacketListener {
 
         parser = new MM3StreamParser();
         parser.setPacketListener(this);
-        mm3EventGenerator = new MM3EventGenerator(parser);
-        serialPortConfig = new SerialPortConfig();
+        mm3EventGenerator = new MM3EventGenerator();
+        mm3EventGenerator.setParser(parser);
+        serialPortConfig = new SerialPortConfig(new Properties());
     }
 
     @Test(enabled = false)

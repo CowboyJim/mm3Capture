@@ -18,7 +18,6 @@ public class MM3StreamParser implements DataParser {
     private static final int EKG_PACKET_SIZE = 39;
     protected byte currentSyncByte = -1;
 
-    @Autowired
     protected MM3PacketListener listener;
 
     @Override

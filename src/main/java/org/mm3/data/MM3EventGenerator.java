@@ -18,16 +18,11 @@ public class MM3EventGenerator extends BaseEventGenerator {
 
     protected Logger LOG = LoggerFactory.getLogger(MM3EventGenerator.class);
 
-    protected SerialPort serialPort;
-
     @Autowired
     protected SerialPortConfig serialConfig;
 
-    public MM3EventGenerator(DataParser parser) {
-        super(parser);
-    }
+    protected SerialPort serialPort;
 
-    @PostConstruct
     public void connectToSerialPort() throws SerialPortException {
         connectToSerialPort(serialConfig);
     }
@@ -44,6 +39,10 @@ public class MM3EventGenerator extends BaseEventGenerator {
 
         serialPort.setEventsMask(SerialPort.MASK_RXCHAR);
         serialPort.addEventListener(new SerialPortStreamReader());
+    }
+
+    public void disconnectFromSerialPort() throws SerialPortException {
+        serialPort.closePort();
     }
 
     /**

@@ -25,10 +25,6 @@ public class FileBasedEventGenerator extends BaseEventGenerator {
 
     protected int playbackFrequency = 500;
 
-    public FileBasedEventGenerator(DataParser parser) {
-        super(parser);
-    }
-
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
