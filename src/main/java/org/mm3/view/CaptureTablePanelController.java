@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import org.mm3.data.MM3DataPacket;
+import org.mm3.data.MM3EventGenerator;
 import org.mm3.model.EKGDataPacket;
 import org.mm3.util.CommonDialogs;
 import org.slf4j.Logger;
@@ -24,20 +25,16 @@ import java.util.Optional;
  */
 public class CaptureTablePanelController implements Observer {
 
-    protected Logger LOG = LoggerFactory.getLogger(CaptureTablePanelController.class);
-
-    @Autowired
-    private CommonDialogs commonDialogs;
-
     public static final String[] HEADER = new String[]{"Seq", "EMG_L", "0.75", "1.5", "3", "4.5", "6", "7.5", "9", "10.5", "12.5", "15", "19", "24", "30", "38",
             "EMG_R", "0.75", "1.5", "3", "4.5", "6", "7.5", "9", "10.5", "12.5", "15", "19", "24", "30", "38"};
-
+    protected Logger LOG = LoggerFactory.getLogger(CaptureTablePanelController.class);
+    @Autowired
+    private CommonDialogs commonDialogs;
+    @Autowired
+    private MM3EventGenerator eventGenerator;
     private ObservableList<EKGDataPacket> ekgData = FXCollections.observableArrayList();
 
     private boolean capturing = false;
-
-    @FXML
-    public VisualPanelController visualPanelController;
 
     @FXML
     private ProgressBar progressBar;
@@ -212,15 +209,24 @@ public class CaptureTablePanelController implements Observer {
      */
     private void toggleCapture(boolean state) {
         LOG.debug("Capture on: " + state);
+
+
+        if (state) {
+            eventGenerator.addObserver(this);
+
+        } else {
+            eventGenerator.deleteObserver(this);
+        }
+
         capturing = state;
         progressBar.setVisible(capturing);
     }
 
 
     @Override
-    public void update(Observable o, Object arg) {
+    public void update(Observable o, Object mm3Packet) {
         if (capturing) {
-            ekgData.add(new EKGDataPacket(MM3DataPacket.getSequenceNum(), ((MM3DataPacket) arg).getByteArray()));
+            ekgData.add(new EKGDataPacket(MM3DataPacket.getSequenceNum(), ((MM3DataPacket) mm3Packet).getByteArray()));
         }
     }
 }

@@ -81,7 +81,8 @@ public class ByteRingBuffer {
      */
     public void discard(int len) {
         if (len < 0) {
-            throw new IllegalArgumentException();
+            return;
+            //throw new IllegalArgumentException();
         }
         int trLen = Math.min(len, rBufUsed);
         rBufPos = clip(rBufPos + trLen);

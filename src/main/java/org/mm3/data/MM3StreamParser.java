@@ -1,14 +1,11 @@
 package org.mm3.data;
 
 import org.mm3.util.ByteRingBuffer;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by CowboyJim on 7/8/15.
  */
 public class MM3StreamParser implements DataParser {
-
-    protected static ByteRingBuffer buffer = new ByteRingBuffer(256);
 
     private static final byte syncByte_1 = 0x0A;
     private static final byte syncByte_2 = 0x05;
@@ -16,6 +13,7 @@ public class MM3StreamParser implements DataParser {
      * All EKG data packet are 39 bytes.
      */
     private static final int EKG_PACKET_SIZE = 39;
+    protected static ByteRingBuffer buffer = new ByteRingBuffer(256);
     protected byte currentSyncByte = -1;
 
     protected MM3PacketListener listener;
@@ -40,6 +38,8 @@ public class MM3StreamParser implements DataParser {
             if ((packet = getEKGPacket()) == null) {
                 return;
             } else {
+
+                System.out.println("Packet decoded");
                 listener.packetReceived(packet);
             }
         }

@@ -10,7 +10,6 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import org.springframework.context.ApplicationContext;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -23,9 +22,8 @@ import java.lang.reflect.Field;
  */
 public class AutowiringFXMLLoader extends Stage {
 
-    private ApplicationContext context;
-
     protected final Object controller;
+    private ApplicationContext context;
 
     public AutowiringFXMLLoader(String classpathUrl, Window owner, ApplicationContext context) {
         this(classpathUrl, owner, context, StageStyle.DECORATED);
@@ -54,21 +52,21 @@ public class AutowiringFXMLLoader extends Stage {
 
 
     protected void recursiveWire(Object root) throws Exception {
+
+        if (root == null) {
+            return;
+        }
         context.getAutowireCapableBeanFactory().autowireBean(root);
         context.getAutowireCapableBeanFactory().initializeBean(root, null);
+
 
         for (Field field : root.getClass().getDeclaredFields()) {
             field.setAccessible(true);
             if (field.isAnnotationPresent(FXML.class) &&
-                    ! Node.class.isAssignableFrom(field.getType())) {
+                    !Node.class.isAssignableFrom(field.getType())) {
                 // <== assume if not a Node, must be a controller
                 recursiveWire(field.get(root));
             }
         }
-    }
-
-    @PostConstruct
-    private void postConstruct() {
-        //context.getAutowireCapableBeanFactory().autowireBeanProperties(controller, AutowireCapableBeanFactory.AUTOWIRE_NO, false);
     }
 }

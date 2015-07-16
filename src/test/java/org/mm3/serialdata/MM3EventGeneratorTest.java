@@ -1,15 +1,13 @@
 package org.mm3.serialdata;
 
 import jssc.SerialPortException;
-import org.mm3.config.SerialPortConfig;
+import org.mm3.config.AppConfig;
 import org.mm3.data.MM3DataPacket;
 import org.mm3.data.MM3EventGenerator;
 import org.mm3.data.MM3PacketListener;
 import org.mm3.data.MM3StreamParser;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-
-import java.util.Properties;
 
 /**
  * Created by jim on 7/8/15.
@@ -20,7 +18,7 @@ public class MM3EventGeneratorTest implements MM3PacketListener {
 
 
     protected MM3EventGenerator mm3EventGenerator;
-    protected SerialPortConfig serialPortConfig;
+    protected AppConfig appConfig;
     MM3StreamParser parser;
 
     @BeforeTest
@@ -30,19 +28,19 @@ public class MM3EventGeneratorTest implements MM3PacketListener {
         parser.setPacketListener(this);
         mm3EventGenerator = new MM3EventGenerator();
         mm3EventGenerator.setParser(parser);
-        serialPortConfig = new SerialPortConfig(new Properties());
+        appConfig = new AppConfig();
     }
 
     @Test(enabled = false)
     public void testConnectToSerialPort() {
 
 
-        serialPortConfig.portID = "/dev/tty.usbserial";
+        appConfig.setPortID("/dev/tty.usbserial");
 
 
         try {
-            //     mm3EventGenerator.testConnection(serialPortConfig);
-            mm3EventGenerator.connectToSerialPort(serialPortConfig);
+            //     mm3EventGenerator.testConnection(appConfig);
+            mm3EventGenerator.connectToSerialPort(appConfig);
 
         } catch (SerialPortException e) {
             e.printStackTrace();

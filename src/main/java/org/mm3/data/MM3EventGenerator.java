@@ -4,45 +4,65 @@ import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
-import org.mm3.config.SerialPortConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.mm3.config.AppConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 /**
  * Created by CowboyJim on 7/8/15.
  */
 public class MM3EventGenerator extends BaseEventGenerator {
 
-    protected Logger LOG = LoggerFactory.getLogger(MM3EventGenerator.class);
-
     @Autowired
-    protected SerialPortConfig serialConfig;
+    protected AppConfig appConfig;
 
     protected SerialPort serialPort;
 
+    protected boolean connectedToSerial = false;
+
     public void connectToSerialPort() throws SerialPortException {
-        connectToSerialPort(serialConfig);
+        connectToSerialPort(appConfig);
     }
 
     /**
      * @param serialConfig
      * @throws SerialPortException
      */
-    public void connectToSerialPort(SerialPortConfig serialConfig) throws SerialPortException {
-        serialPort = new SerialPort(serialConfig.portID);
-        serialPort.openPort();
-        serialPort.setParams(serialConfig.baudrate, serialConfig.databits, serialConfig.stopbits, serialConfig.parity,
-                serialConfig.rts, serialConfig.dtr);
+    public void connectToSerialPort(AppConfig serialConfig) throws SerialPortException {
 
-        serialPort.setEventsMask(SerialPort.MASK_RXCHAR);
-        serialPort.addEventListener(new SerialPortStreamReader());
+        if (!connectedToSerial) {
+            serialPort = new SerialPort(serialConfig.getPortID());
+            serialPort.openPort();
+            serialPort.setParams(serialConfig.getBaudrate(), serialConfig.getDatabits(), serialConfig.getStopbits(), serialConfig.getParity(),
+                    serialConfig.isRts(), serialConfig.isDtr());
+
+            serialPort.setEventsMask(SerialPort.MASK_RXCHAR);
+            serialPort.addEventListener(new SerialPortStreamReader());
+            connectedToSerial = true;
+            LOG.info("Connected to serial port: " + serialConfig.getPortID());
+        }
     }
 
     public void disconnectFromSerialPort() throws SerialPortException {
-        serialPort.closePort();
+        serialPort.removeEventListener();
+        if (serialPort.isOpened()) {
+            serialPort.closePort();
+        }
+        serialPort = null;
+        connectedToSerial = false;
+        LOG.info("Disconnected from serial port: " + appConfig.getPortID());
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        if (serialPort != null) {
+            try {
+                disconnectFromSerialPort();
+            } catch (SerialPortException e) {
+                LOG.error("SerialPortException", e);
+            }
+        }
     }
 
     /**
