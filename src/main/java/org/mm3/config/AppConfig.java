@@ -154,6 +154,7 @@ public class AppConfig {
         if (input == null) {
             LOG.warn("Could not find properties file. Loading defaults");
             props = getDefaultProperties();
+            saveProperties();
         } else {
 
             props = new Properties();
@@ -191,6 +192,7 @@ public class AppConfig {
         } else if (os.contains("nix")) {
             portId = "/dev/ttyS0";
         }
+        this.portID = portId;
         props.setProperty("portID", portId);
         props.setProperty("baudrate", "9600");
         props.setProperty("databits", "8");
