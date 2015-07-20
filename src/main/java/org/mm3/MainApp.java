@@ -22,8 +22,8 @@ public class MainApp extends Application {
 
         SpringConfig screens = context.getBean(SpringConfig.class);
         screens.setPrimaryStage(primaryStage);
-        primaryStage.setTitle("Mind Mirror 3 Dynamic Visual Interface");
         screens.mainScreen().show();
+
 
     }
 

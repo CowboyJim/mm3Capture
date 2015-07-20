@@ -1,20 +1,20 @@
 package org.mm3.config;
 
+import javafx.beans.property.SimpleStringProperty;
 import jssc.SerialPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Properties;
 
 /**
  * Created with IntelliJ IDEA.
  * User: CowboyJim
  * Date: 7/7/15
- * <p>
+ * <p/>
  * Defaults:
  * public int baudrate = SerialPort.BAUDRATE_9600;
  * public int parity = SerialPort.PARITY_NONE;
@@ -23,7 +23,7 @@ import java.util.Properties;
  */
 public class AppConfig {
 
-    public static final String PROPERTY_FILE_NAME = "mm3_ui.properties";
+    public static final String PROPERTY_FILE_NAME = "./mm3_ui.properties";
     protected Logger LOG = LoggerFactory.getLogger(SpringConfig.class);
     protected String portID;
     protected int baudrate = SerialPort.BAUDRATE_9600;
@@ -32,11 +32,26 @@ public class AppConfig {
     protected int databits = SerialPort.DATABITS_8;
     protected boolean rts = false;
     protected boolean dtr = true;
+    protected String defaultDirectory = "./capture";
     protected Properties props;
+
+    protected SimpleStringProperty comPort = new SimpleStringProperty();
+
+    public String getComPort() {
+        return comPort.get();
+    }
+
+    public SimpleStringProperty comPortProperty() {
+        return comPort;
+    }
+
+    public void setComPort(String comPort) {
+        this.comPort.set(comPort);
+    }
 
     public AppConfig() {
         props = readProperties();
-        portID = props.getProperty("portID");
+        setPortID(props.getProperty("portID"));
         baudrate = Integer.valueOf(props.getProperty("baudrate"));
         parity = Integer.valueOf(props.getProperty("parity"));
         stopbits = Integer.valueOf(props.getProperty("stopbits"));
@@ -48,6 +63,7 @@ public class AppConfig {
     }
 
     public void setPortID(String portID) {
+        setComPort(portID);
         this.portID = portID;
     }
 
@@ -99,6 +115,14 @@ public class AppConfig {
         this.dtr = dtr;
     }
 
+    public String getDefaultDirectory() {
+        return defaultDirectory;
+    }
+
+    public void setDefaultDirectory(String defaultDirectory) {
+        this.defaultDirectory = defaultDirectory;
+    }
+
     protected Properties getProperties() {
         Properties props = new Properties();
         props.setProperty("portID", portID);
@@ -106,32 +130,31 @@ public class AppConfig {
         props.setProperty("databits", String.valueOf(databits));
         props.setProperty("parity", String.valueOf(parity));
         props.setProperty("stopbits", String.valueOf(stopbits));
+        props.setProperty("defaultDirectory", defaultDirectory);
 
         return props;
-
     }
 
     protected void setProperties() {
 
-        portID = props.getProperty("portID");
+        setPortID(props.getProperty("portID"));
         baudrate = Integer.valueOf(props.getProperty("baudrate"));
         parity = Integer.valueOf(props.getProperty("parity"));
         stopbits = Integer.valueOf(props.getProperty("stopbits"));
         databits = Integer.valueOf(props.getProperty("databits"));
+        defaultDirectory = props.getProperty("defaultDirectory");
+
     }
 
     public void saveProperties() {
         Properties propsOut = getProperties();
         OutputStream output = null;
-
         try {
             output = new FileOutputStream(PROPERTY_FILE_NAME);
 
             // save properties to project root folder
             propsOut.store(output, null);
-
         } catch (IOException io) {
-
             LOG.error("Could not store application properties", io);
         } finally {
             if (output != null) {
@@ -141,42 +164,36 @@ public class AppConfig {
                     LOG.error("Exception closing stream", e);
                 }
             }
-
         }
-
     }
 
     protected Properties readProperties() {
 
-        InputStream input = null;
+        FileInputStream input = null;
 
-        input = getClass().getClassLoader().getResourceAsStream(PROPERTY_FILE_NAME);
-        if (input == null) {
+        try {
+            input = new FileInputStream(new File(PROPERTY_FILE_NAME));
+            props = new Properties();
+            props.load(input);
+
+        } catch (FileNotFoundException e) {
             LOG.warn("Could not find properties file. Loading defaults");
             props = getDefaultProperties();
             saveProperties();
-        } else {
+        } catch (IOException e) {
+            LOG.error("Error loading properties file. Loading defaults");
+            props = getDefaultProperties();
 
-            props = new Properties();
-            try {
-                props.load(input);
+        } finally {
+            setProperties();
 
-            } catch (IOException e) {
-                LOG.error("Error loading properties file. Loading defaults");
-                props = getDefaultProperties();
-            } finally {
-
-                setProperties();
-
-                if (input != null) {
-                    try {
-                        input.close();
-                    } catch (IOException e) {
-                        LOG.error("Exception closing input stream", e);
-                    }
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    LOG.error("Exception closing input stream", e);
                 }
             }
-
         }
         return props;
     }
@@ -198,8 +215,8 @@ public class AppConfig {
         props.setProperty("databits", "8");
         props.setProperty("parity", "0");
         props.setProperty("stopbits", "1");
+        props.setProperty("defaultDirectory", "./capture");
 
         return props;
     }
-
 }

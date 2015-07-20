@@ -25,13 +25,11 @@ import org.springframework.context.annotation.Scope;
  */
 @Configuration
 @Lazy
-
 public class SpringConfig {
 
     protected Logger LOG = LoggerFactory.getLogger(SpringConfig.class);
 
     private Stage primaryStage;
-
 
     @Autowired
     private ApplicationContext context;
@@ -40,10 +38,16 @@ public class SpringConfig {
         this.primaryStage = primaryStage;
     }
 
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
+
     public void showScreen(Parent screen) {
+        primaryStage.setTitle("Mind Mirror 3 Dynamic Visual Interface");
         primaryStage.setScene(new Scene(screen, 1100, 600));
         primaryStage.show();
     }
+
 
     @Bean
     public AppConfig AppConfig() {

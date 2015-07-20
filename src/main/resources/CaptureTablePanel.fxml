@@ -4,13 +4,14 @@
 <?import java.util.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.input.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
 <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="800.0" prefWidth="1100.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="org.mm3.view.CaptureTablePanelController">
   <children>
-    <GridPane>
+    <GridPane minHeight="30.0">
       <children>
         <HBox prefHeight="38.0" prefWidth="400.0" spacing="10.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
           <fx:define>
@@ -34,8 +35,18 @@
         <HBox alignment="CENTER_RIGHT" prefHeight="38.0" prefWidth="400.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
           <children>
             <Label text="Captured Data" />
-            <Button fx:id="clearDataBtn" mnemonicParsing="false" text="Clear Data" />
-            <Button fx:id="saveDataBtn" mnemonicParsing="false" text="Save Data" />
+            <Button fx:id="clearDataBtn" mnemonicParsing="false" text="Clear Table" />
+            <MenuButton mnemonicParsing="false" text="File Actions">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Save to file..." fx:id="saveDataMenu">
+                  <accelerator>
+                    <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                  </accelerator>
+                </MenuItem>
+                <MenuItem mnemonicParsing="false" text="Load from file..." fx:id="loadDataMenu" />
+                <MenuItem mnemonicParsing="false" text="Export to CSV file..." fx:id="exportDataMenu" />
+              </items>
+            </MenuButton>
           </children>
           <padding>
             <Insets bottom="5.0" left="5.0" right="20.0" top="5.0" />
@@ -50,7 +61,7 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
       </rowConstraints>
     </GridPane>
-    <TableView fx:id="ekgDataTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="513.0" prefWidth="800.0">
+    <TableView fx:id="ekgDataTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="513.0" prefWidth="800.0" VBox.vgrow="ALWAYS">
       <columns>
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="A" fx:id="sequence" />
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="B" fx:id="lEmg" />

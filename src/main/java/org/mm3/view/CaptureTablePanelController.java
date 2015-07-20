@@ -1,11 +1,16 @@
 package org.mm3.view;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.FileChooser;
+import org.mm3.config.AppConfig;
+import org.mm3.config.SpringConfig;
 import org.mm3.data.MM3DataPacket;
 import org.mm3.data.MM3EventGenerator;
 import org.mm3.model.EKGDataPacket;
@@ -14,6 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Optional;
@@ -23,16 +31,29 @@ import java.util.Optional;
  * User: CowboyJim
  * Date: 7/13/15
  */
-public class CaptureTablePanelController implements Observer {
+public class CaptureTablePanelController implements Observer, NestedController {
 
     public static final String[] HEADER = new String[]{"Seq", "EMG_L", "0.75", "1.5", "3", "4.5", "6", "7.5", "9", "10.5", "12.5", "15", "19", "24", "30", "38",
             "EMG_R", "0.75", "1.5", "3", "4.5", "6", "7.5", "9", "10.5", "12.5", "15", "19", "24", "30", "38"};
     protected Logger LOG = LoggerFactory.getLogger(CaptureTablePanelController.class);
+
     @Autowired
     private CommonDialogs commonDialogs;
     @Autowired
     private MM3EventGenerator eventGenerator;
+    @Autowired
+    private SpringConfig springConfig;
+
+    private MainController mainController;
+
+    @Autowired
+    private AppConfig appConfig;
+
+    protected SimpleDateFormat dataFormatter = new SimpleDateFormat("yyyy-MM-dd.HH.mm.ss");
+
     private ObservableList<EKGDataPacket> ekgData = FXCollections.observableArrayList();
+
+    private BooleanProperty dataNotPresent = new SimpleBooleanProperty(false);
 
     private boolean capturing = false;
 
@@ -45,7 +66,12 @@ public class CaptureTablePanelController implements Observer {
     @FXML
     private Button clearDataBtn;
     @FXML
-    private Button saveDataBtn;
+    private MenuItem saveDataMenu;
+    @FXML
+    private MenuItem loadDataMenu;
+    @FXML
+    private MenuItem exportDataMenu;
+
     @FXML
     private TableView<EKGDataPacket> ekgDataTable;
     @FXML
@@ -148,11 +174,26 @@ public class CaptureTablePanelController implements Observer {
         rCh14.setCellValueFactory(cellData -> cellData.getValue().rCh14Property());
 
         ekgData.add(new EKGDataPacket(HEADER));
+
+        ekgData.add(new EKGDataPacket(1, new byte[]{0x05, (byte) 0x27, (byte) 0x93, (byte) 0x04, (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x03, (byte) 0x1C, (byte) 0x60, (byte) 0x9A,
+                (byte) 0xB3, (byte) 0xCC, (byte) 0xE9, (byte) 0xff, (byte) 0xff, (byte) 0xF1, (byte) 0xD8, (byte) 0xBF, (byte) 0x9A,
+                0x60, (byte) 0x19, (byte) 0x03, (byte) 0x1C, (byte) 0x60, (byte) 0x9A, (byte) 0xB3, (byte) 0xCC, (byte) 0xE9, (byte) 0xff, (byte) 0xff, (byte) 0xF1,
+                (byte) 0xD8, (byte) 0xBF, (byte) 0x9A, (byte) 0x60, (byte) 0x19}));
+        ekgData.add(new EKGDataPacket(2, new byte[]{0x0a, (byte) 0x27, (byte) 0x93, (byte) 0x04, (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x03, (byte) 0x1C, (byte) 0x60, (byte) 0x9A,
+                (byte) 0xB3, (byte) 0xCC, (byte) 0xE9, (byte) 0xff, (byte) 0xff, (byte) 0xF1, (byte) 0xD8, (byte) 0xBF, (byte) 0x9A,
+                0x60, (byte) 0x19, (byte) 0x03, (byte) 0x1C, (byte) 0x60, (byte) 0x9A, (byte) 0xB3, (byte) 0xCC, (byte) 0xE9, (byte) 0xff, (byte) 0xff, (byte) 0xF1,
+                (byte) 0xD8, (byte) 0xBF, (byte) 0x9A, (byte) 0x60, (byte) 0x19}));
+
+
         ekgDataTable.setItems(ekgData);
         progressBar.setVisible(false);
 
+        saveDataMenu.disableProperty().bindBidirectional(dataNotPresent);
+        clearDataBtn.disableProperty().bindBidirectional(dataNotPresent);
+        exportDataMenu.disableProperty().bindBidirectional(dataNotPresent);
+
         ekgDataTable.addEventHandler(KeyEvent.KEY_TYPED, event -> {
-            if(event.getCode() == KeyCode.ENTER)    {
+            if (event.getCode() == KeyCode.ENTER) {
                 System.out.println("Enter Key ");
 
             }
@@ -170,6 +211,14 @@ public class CaptureTablePanelController implements Observer {
             toggleCapture(false);
         });
 
+        exportDataMenu.setOnAction(event -> {
+            exportTableToCSV();
+        });
+
+        loadDataMenu.setOnAction(event -> {
+            loadTableFromFile();
+        });
+
 
         /**
          *
@@ -177,31 +226,28 @@ public class CaptureTablePanelController implements Observer {
         clearDataBtn.setOnAction(event -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION.CONFIRMATION);
             alert.setTitle("Confirmation Dialog");
-            //alert.setHeaderText("Delete Captured Data");
             alert.setHeaderText(null);
             alert.setContentText("Are you sure you want to delete the table data?");
 
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
-                LOG.debug("OK to clear data");
-                ekgData.remove(1, ekgData.size());
+                clearTableData();
             } else {
                 LOG.debug("Cancel Data clear");
             }
 
         });
 
-        saveDataBtn.setOnAction(event -> {
-            if (ekgData.size() <= 1) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Table is Already Clear");
-                alert.setHeaderText(null);
-                alert.setContentText("There is no data to clear");
-
-                alert.showAndWait();
-            }
+        saveDataMenu.setOnAction(event -> {
+            saveTableDataToFile();
         });
 
+    }
+
+    private void clearTableData() {
+        ekgData.remove(1, ekgData.size());
+        dataNotPresent.set(true);
+        mainController.setStatusMessage("Table cleared");
     }
 
     /**
@@ -209,8 +255,6 @@ public class CaptureTablePanelController implements Observer {
      */
     private void toggleCapture(boolean state) {
         LOG.debug("Capture on: " + state);
-
-
         if (state) {
             eventGenerator.addObserver(this);
 
@@ -222,11 +266,156 @@ public class CaptureTablePanelController implements Observer {
         progressBar.setVisible(capturing);
     }
 
-
     @Override
     public void update(Observable o, Object mm3Packet) {
         if (capturing) {
+            if (dataNotPresent.get() == false) {
+                dataNotPresent.set(true);
+            }
             ekgData.add(new EKGDataPacket(MM3DataPacket.getSequenceNum(), ((MM3DataPacket) mm3Packet).getByteArray()));
         }
+    }
+
+    protected void saveTableDataToFile() {
+
+        File outputFile = getOutputFile("eeg");
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(outputFile);
+            for (int x = 1; x < ekgData.size(); x++) {
+                fos.write(leIntToByteArray(ekgData.get(x).getPacketNum()));
+                fos.write(ekgData.get(x).getPacket());
+            }
+            mainController.setStatusMessage("File successfully saved");
+
+        } catch (Exception e) {
+            LOG.error("Exception while saving file to disk", e);
+            mainController.setStatusMessage("An exception occurred! The file was not saved");
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    LOG.error("Exception while closing output stream", e);
+                }
+            }
+        }
+    }
+
+    private File getOutputFile(String fileExtension) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save File to Disk");
+        File directory = new File(appConfig.getDefaultDirectory());
+        // Create the directory if it doesn't exist
+        if (!directory.exists()) {
+            directory.mkdir();
+        }
+        fileChooser.setInitialDirectory(directory);
+        fileChooser.setInitialFileName(dataFormatter.format(new Date()) + "." + fileExtension);
+        return fileChooser.showSaveDialog(springConfig.getPrimaryStage());
+    }
+
+    protected void exportTableToCSV() {
+        int i;
+        PrintStream ps = null;
+        try {
+            File outputFile = getOutputFile("csv");
+            ps = new PrintStream(outputFile);
+
+            for (i = 0; i < HEADER.length; i++) {
+                ps.print(HEADER[i]);
+                if (i < HEADER.length - 1) {
+                    ps.print(",");
+                }
+            }
+            ps.println();
+
+            for (i = 1; i < ekgData.size(); i++) {
+                ps.print(ekgData.get(i).getPacketNum() + ",");
+                byte[] data = ekgData.get(i).getPacket();
+                for (int x = 0; x < data.length; x++) {
+                    ps.print(String.valueOf(data[x] & 0xFF));
+                    if (x < data.length - 1) {
+                        ps.print(",");
+                    }
+                }
+                ps.println();
+            }
+            ps.flush();
+
+            mainController.setStatusMessage("File successfully saved");
+
+        } catch (Exception e) {
+            LOG.error("Exception while exporting file", e);
+            mainController.setStatusMessage("An exception occurred! The data was not exported");
+        } finally {
+            if (ps != null) {
+                ps.close();
+            }
+        }
+
+    }
+
+    protected void loadTableFromFile() {
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Load data from disk");
+        File directory = new File(appConfig.getDefaultDirectory());
+        fileChooser.setInitialDirectory(directory);
+        fileChooser.setInitialFileName(dataFormatter.format(new Date()) + ".eeg");
+        File file = fileChooser.showOpenDialog(springConfig.getPrimaryStage());
+
+        if (file != null) {
+            clearTableData();
+            try {
+                FileInputStream fis = new FileInputStream(file);
+                byte sequence[] = new byte[4];
+                byte data[] = new byte[39];
+
+                while (fis.read(sequence) != -1) {
+                    fis.read(data);
+                    ekgData.add(new EKGDataPacket(byteArrayToLeInt(sequence), data));
+                }
+
+                dataNotPresent.set(false);
+                mainController.setStatusMessage("Data successfully imported");
+
+            } catch (Exception e) {
+                String msg = "An exception occurred! The data was not loaded";
+                LOG.error(msg, e);
+                mainController.setStatusMessage(msg);
+            }
+        }
+
+    }
+
+    public int byteArrayToLeInt(byte[] encodedValue) {
+        int value = (encodedValue[3] << (Byte.SIZE * 3));
+        value |= (encodedValue[2] & 0xFF) << (Byte.SIZE * 2);
+        value |= (encodedValue[1] & 0xFF) << (Byte.SIZE * 1);
+        value |= (encodedValue[0] & 0xFF);
+        return value;
+    }
+
+    public byte[] leIntToByteArray(int value) {
+        byte[] encodedValue = new byte[Integer.SIZE / Byte.SIZE];
+        encodedValue[3] = (byte) (value >> Byte.SIZE * 3);
+        encodedValue[2] = (byte) (value >> Byte.SIZE * 2);
+        encodedValue[1] = (byte) (value >> Byte.SIZE);
+        encodedValue[0] = (byte) value;
+        return encodedValue;
+    }
+
+    protected int byteArrayToInt(byte[] b) {
+        return b[3] & 0xFF |
+                (b[2] & 0xFF) << 8 |
+                (b[1] & 0xFF) << 16 |
+                (b[0] & 0xFF) << 24;
+    }
+
+
+    @Override
+    public void setMainController(MainController controller) {
+        this.mainController = controller;
     }
 }

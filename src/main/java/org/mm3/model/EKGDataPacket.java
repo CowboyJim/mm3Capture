@@ -12,6 +12,9 @@ import javafx.beans.property.StringProperty;
  */
 public class EKGDataPacket {
 
+    protected int packetNum;
+    protected byte[] packet;
+
     public StringProperty sequence;
     public StringProperty lEmg;
     public StringProperty lCh1;
@@ -46,6 +49,9 @@ public class EKGDataPacket {
 
 
     public EKGDataPacket(int sequence, byte[] data) {
+        this.packetNum = sequence;
+        this.packet = data;
+
         this.sequence = new SimpleStringProperty(String.valueOf(sequence));
         this.lEmg = new SimpleStringProperty(byteToString(data[0]));
         this.lCh1 = new SimpleStringProperty(byteToString(data[1]));
@@ -114,6 +120,22 @@ public class EKGDataPacket {
         this.rCh12 = new SimpleStringProperty(data[28]);
         this.rCh13 = new SimpleStringProperty(data[29]);
         this.rCh14 = new SimpleStringProperty(data[30]);
+    }
+
+    public int getPacketNum() {
+        return packetNum;
+    }
+
+    public void setPacketNum(int packetNum) {
+        this.packetNum = packetNum;
+    }
+
+    public byte[] getPacket() {
+        return packet;
+    }
+
+    public void setPacket(byte[] packet) {
+        this.packet = packet;
     }
 
     public void setSequence(String sequence) {
@@ -443,6 +465,7 @@ public class EKGDataPacket {
     public void setrCh14(String rCh14) {
         this.rCh14.set(rCh14);
     }
+
     public String byteToString(byte b) {
         return String.valueOf(b & 0xFF);
     }

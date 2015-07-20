@@ -1,18 +1,26 @@
 package org.mm3.view;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ToggleButton;
+import javafx.stage.FileChooser;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
 import org.mm3.config.AppConfig;
+import org.mm3.config.SpringConfig;
 import org.mm3.data.MM3EventGenerator;
 import org.mm3.util.CommonDialogs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +30,7 @@ import java.util.Optional;
  * User: CowboyJim
  * Date: 7/13/15
  */
-public class MainAppController {
+public class MainAppController implements MainController {
 
     protected Logger LOG = LoggerFactory.getLogger(MainAppController.class);
 
@@ -31,6 +39,9 @@ public class MainAppController {
 
     @Autowired
     private CommonDialogs commonDialogs;
+
+    @Autowired
+    private SpringConfig springConfig;
 
     @Autowired
     private AppConfig appConfig;
@@ -43,6 +54,14 @@ public class MainAppController {
     private ToggleButton comDisconnectBtn;
     @FXML
     private MenuItem settingsDialog;
+    @FXML
+    private MenuItem closeMenuItem;
+    @FXML
+    private MenuItem exportMenuItem;
+    @FXML
+    private Label currentPortID;
+    @FXML
+    private Label statusOutputLbl;
 
     @FXML
     private CaptureTablePanelController captureTablePanelController;
@@ -51,7 +70,6 @@ public class MainAppController {
 
     @FXML
     private void initialize() {
-
         comConnectBtn.setOnAction(event -> {
             toggleComPort(true);
         });
@@ -64,6 +82,17 @@ public class MainAppController {
             showConfigurationDialog();
         });
 
+        closeMenuItem.setOnAction(event -> {
+            Platform.exit();
+        });
+
+    }
+
+
+    @PostConstruct
+    public void init() {
+        // Bind the port property to the UI label
+        currentPortID.textProperty().bindBidirectional(appConfig.comPortProperty());
     }
 
     /**
@@ -122,4 +151,8 @@ public class MainAppController {
 
     }
 
+    @Override
+    public void setStatusMessage(String message) {
+        statusOutputLbl.setText(message);
+    }
 }
