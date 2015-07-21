@@ -20,7 +20,18 @@ public class MM3DataPacket {
         return packetData;
     }
 
+    public int[] getLeftChannelValues(){
+
+        return null;
+    }
+
+    public int[] getRightChannelValues(){
+
+        return null;
+    }
+
     public static int getSequenceNum() {
         return sequenceCount;
     }
+
 }

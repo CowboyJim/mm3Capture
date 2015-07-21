@@ -6,9 +6,9 @@ import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ToggleButton;
-import javafx.stage.FileChooser;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
+import org.mm3.alerts.AlertManager;
 import org.mm3.config.AppConfig;
 import org.mm3.config.SpringConfig;
 import org.mm3.data.MM3EventGenerator;
@@ -18,9 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +42,9 @@ public class MainAppController implements MainController {
 
     @Autowired
     private AppConfig appConfig;
+
+    @Autowired
+    private AlertManager alterManager;
 
     private boolean comConnected = false;
 

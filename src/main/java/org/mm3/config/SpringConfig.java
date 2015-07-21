@@ -3,6 +3,7 @@ package org.mm3.config;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.mm3.alerts.AlertManager;
 import org.mm3.data.FileBasedEventGenerator;
 import org.mm3.data.MM3EventGenerator;
 import org.mm3.data.MM3StreamParser;
@@ -78,5 +79,10 @@ public class SpringConfig {
     @Bean
     public CommonDialogs CommonDialogs() {
         return new CommonDialogs();
+    }
+
+    @Bean
+    public AlertManager AlterManager(){
+        return new AlertManager();
     }
 }
