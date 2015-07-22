@@ -11,10 +11,11 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import org.mm3.config.AppConfig;
 import org.mm3.config.SpringConfig;
-import org.mm3.data.MM3DataPacket;
+import org.mm3.model.MM3DataPacket;
 import org.mm3.data.MM3EventGenerator;
 import org.mm3.model.EKGDataPacket;
 import org.mm3.util.CommonDialogs;
+import org.mm3.util.ConversionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ public class CaptureTablePanelController implements Observer, NestedController {
 
     public static final String[] HEADER = new String[]{"Seq", "EMG_L", "0.75", "1.5", "3", "4.5", "6", "7.5", "9", "10.5", "12.5", "15", "19", "24", "30", "38",
             "EMG_R", "0.75", "1.5", "3", "4.5", "6", "7.5", "9", "10.5", "12.5", "15", "19", "24", "30", "38"};
+    private final ConversionUtils conversionUtils = new ConversionUtils();
     protected Logger LOG = LoggerFactory.getLogger(CaptureTablePanelController.class);
 
     @Autowired
@@ -197,8 +199,8 @@ public class CaptureTablePanelController implements Observer, NestedController {
                 System.out.println("Enter Key ");
 
             }
-            System.out.println(event.getCode());
-            System.out.println(event.getEventType());
+//            System.out.println(event.getCode());
+//            System.out.println(event.getEventType());
             event.consume();
 
         });
@@ -218,7 +220,6 @@ public class CaptureTablePanelController implements Observer, NestedController {
         loadDataMenu.setOnAction(event -> {
             loadTableFromFile();
         });
-
 
         /**
          *
@@ -241,7 +242,11 @@ public class CaptureTablePanelController implements Observer, NestedController {
         saveDataMenu.setOnAction(event -> {
             saveTableDataToFile();
         });
+    }
 
+    @Override
+    public void setMainController(MainController controller) {
+        this.mainController = controller;
     }
 
     private void clearTableData() {
@@ -283,7 +288,7 @@ public class CaptureTablePanelController implements Observer, NestedController {
         try {
             fos = new FileOutputStream(outputFile);
             for (int x = 1; x < ekgData.size(); x++) {
-                fos.write(leIntToByteArray(ekgData.get(x).getPacketNum()));
+                fos.write(conversionUtils.leIntToByteArray(ekgData.get(x).getPacketNum()));
                 fos.write(ekgData.get(x).getPacket());
             }
             mainController.setStatusMessage("File successfully saved");
@@ -291,12 +296,14 @@ public class CaptureTablePanelController implements Observer, NestedController {
         } catch (Exception e) {
             LOG.error("Exception while saving file to disk", e);
             mainController.setStatusMessage("An exception occurred! The file was not saved");
+            commonDialogs.showExceptionDialog(e);
         } finally {
             if (fos != null) {
                 try {
                     fos.close();
                 } catch (IOException e) {
                     LOG.error("Exception while closing output stream", e);
+                    commonDialogs.showExceptionDialog(e);
                 }
             }
         }
@@ -353,7 +360,6 @@ public class CaptureTablePanelController implements Observer, NestedController {
                 ps.close();
             }
         }
-
     }
 
     protected void loadTableFromFile() {
@@ -374,7 +380,7 @@ public class CaptureTablePanelController implements Observer, NestedController {
 
                 while (fis.read(sequence) != -1) {
                     fis.read(data);
-                    ekgData.add(new EKGDataPacket(byteArrayToLeInt(sequence), data));
+                    ekgData.add(new EKGDataPacket(ConversionUtils.byteArrayToLeInt(sequence), data));
                 }
 
                 dataNotPresent.set(false);
@@ -386,36 +392,5 @@ public class CaptureTablePanelController implements Observer, NestedController {
                 mainController.setStatusMessage(msg);
             }
         }
-
-    }
-
-    public int byteArrayToLeInt(byte[] encodedValue) {
-        int value = (encodedValue[3] << (Byte.SIZE * 3));
-        value |= (encodedValue[2] & 0xFF) << (Byte.SIZE * 2);
-        value |= (encodedValue[1] & 0xFF) << (Byte.SIZE * 1);
-        value |= (encodedValue[0] & 0xFF);
-        return value;
-    }
-
-    public byte[] leIntToByteArray(int value) {
-        byte[] encodedValue = new byte[Integer.SIZE / Byte.SIZE];
-        encodedValue[3] = (byte) (value >> Byte.SIZE * 3);
-        encodedValue[2] = (byte) (value >> Byte.SIZE * 2);
-        encodedValue[1] = (byte) (value >> Byte.SIZE);
-        encodedValue[0] = (byte) value;
-        return encodedValue;
-    }
-
-    protected int byteArrayToInt(byte[] b) {
-        return b[3] & 0xFF |
-                (b[2] & 0xFF) << 8 |
-                (b[1] & 0xFF) << 16 |
-                (b[0] & 0xFF) << 24;
-    }
-
-
-    @Override
-    public void setMainController(MainController controller) {
-        this.mainController = controller;
     }
 }

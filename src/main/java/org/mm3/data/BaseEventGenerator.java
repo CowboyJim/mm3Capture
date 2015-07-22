@@ -1,5 +1,6 @@
 package org.mm3.data;
 
+import org.mm3.model.MM3DataPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,7 @@ public class BaseEventGenerator extends Observable implements MM3PacketListener 
     }
 
     @PostConstruct
-    public void init(){
+    public void init() {
         parser.setPacketListener(this);
     }
-
 }

@@ -45,14 +45,14 @@
         </VBox>
       </bottom>
       <center>
-        <TabPane prefHeight="512.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE">
+        <TabPane fx:id="tabPane" prefHeight="512.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE">
           <tabs>
-            <Tab closable="false" text="Capture">
+            <Tab fx:id="captureTab" closable="false" text="Capture">
               <content>
                 <fx:include fx:id="captureTablePanel" source="CaptureTablePanel.fxml" prefHeight="800.0" prefWidth="1100.0" />
               </content>
             </Tab>
-            <Tab closable="false" text="Display">
+            <Tab fx:id="displayTab" closable="false" text="Display">
               <content>
                 <fx:include fx:id="visualPanel" source="VisualPanel.fxml" prefHeight="800.0" prefWidth="1100.0" />
               </content>

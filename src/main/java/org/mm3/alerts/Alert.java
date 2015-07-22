@@ -1,6 +1,6 @@
 package org.mm3.alerts;
 
-import org.mm3.data.MM3DataPacket;
+import org.mm3.model.MM3DataPacket;
 
 /**
  * Created with IntelliJ IDEA.

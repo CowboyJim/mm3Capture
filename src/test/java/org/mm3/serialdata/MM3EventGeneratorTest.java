@@ -2,7 +2,7 @@ package org.mm3.serialdata;
 
 import jssc.SerialPortException;
 import org.mm3.config.AppConfig;
-import org.mm3.data.MM3DataPacket;
+import org.mm3.model.MM3DataPacket;
 import org.mm3.data.MM3EventGenerator;
 import org.mm3.data.MM3PacketListener;
 import org.mm3.data.MM3StreamParser;

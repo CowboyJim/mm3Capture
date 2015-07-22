@@ -1,5 +1,6 @@
 package org.mm3.data;
 
+import org.mm3.model.MM3DataPacket;
 import org.mm3.util.ByteRingBuffer;
 
 /**

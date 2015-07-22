@@ -2,10 +2,7 @@ package org.mm3.view;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
 import org.mm3.alerts.AlertManager;
@@ -62,6 +59,12 @@ public class MainAppController implements MainController {
     private Label currentPortID;
     @FXML
     private Label statusOutputLbl;
+    @FXML
+    private TabPane tabPane;
+
+    public TabPane getTabPane() {
+        return tabPane;
+    }
 
     @FXML
     private CaptureTablePanelController captureTablePanelController;
