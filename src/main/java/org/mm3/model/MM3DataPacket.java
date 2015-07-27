@@ -37,8 +37,10 @@ public class MM3DataPacket {
 
     protected int[] getAsIntArray(byte[] packetData) {
         int[] data = new int[EKG_PACKET_SIZE];
-        for (int x = 0; x < packetData.length; x++) {
-            data[x] = ConversionUtils.byteToInt(packetData[x]);
+        if (packetData.length <= EKG_PACKET_SIZE) {
+            for (int x = 0; x < packetData.length; x++) {
+                data[x] = ConversionUtils.byteToInt(packetData[x]);
+            }
         }
         return data;
     }

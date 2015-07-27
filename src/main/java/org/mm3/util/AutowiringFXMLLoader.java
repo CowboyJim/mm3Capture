@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationContext;
 import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.net.URL;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,18 +32,16 @@ public class AutowiringFXMLLoader extends Stage {
         this(classpathUrl, owner, context, StageStyle.DECORATED);
     }
 
-    public AutowiringFXMLLoader(String classpathUrl, Window owner, ApplicationContext context, StageStyle style) {
+    public AutowiringFXMLLoader(String fxmlFileName, Window owner, ApplicationContext context, StageStyle style) {
         super(style);
 
-        this.context = context;
-        InputStream fxmlStream = null;
         try {
-            fxmlStream = context.getResource(classpathUrl).getInputStream();
             initOwner(owner);
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(new File("src/main/resources").toURI().toURL());
 
-            Parent rootElement = (Parent) loader.load(fxmlStream);
+            URL fxmlUrl = this.getClass().getClassLoader().getResource(fxmlFileName);
+            Parent rootElement = (Parent) loader.load(fxmlUrl);
+
             setScene(new Scene(rootElement));
             controller = loader.getController();
 

@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class AlertManagerTest {
 
-    @Test
+   // @Test
     public void testLoadAlerts() throws Exception {
 
         AlertManager am = new AlertManager();

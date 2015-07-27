@@ -7,6 +7,8 @@ apply plugin: 'application'
 //apply from: 'https://bitbucket.org/shemnon/javafx-gradle/gradle-javafx-plugin'
 //apply from: 'org.bitbucket.shemnon.javafxplugin.JavaFXPlugin'
 
+apply plugin: "gradle-javafx-plugin"
+
 group 'org.mm3'
 version '0.5'
 
