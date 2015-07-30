@@ -33,6 +33,16 @@ public class AppConfig {
     protected boolean rts = false;
     protected boolean dtr = true;
     protected String defaultDirectory = "./capture";
+    protected String alertDirectory = "c:\\temp";
+
+    public String getAlertDirectory() {
+        return alertDirectory;
+    }
+
+    public void setAlertDirectory(String alertDirectory) {
+        this.alertDirectory = alertDirectory;
+    }
+
     protected Properties props;
 
     protected SimpleStringProperty comPort = new SimpleStringProperty();
@@ -131,6 +141,7 @@ public class AppConfig {
         props.setProperty("parity", String.valueOf(parity));
         props.setProperty("stopbits", String.valueOf(stopbits));
         props.setProperty("defaultDirectory", defaultDirectory);
+        props.setProperty("alertDirectory", alertDirectory);
 
         return props;
     }
@@ -143,6 +154,7 @@ public class AppConfig {
         stopbits = Integer.valueOf(props.getProperty("stopbits"));
         databits = Integer.valueOf(props.getProperty("databits"));
         defaultDirectory = props.getProperty("defaultDirectory");
+        alertDirectory = props.getProperty("alertDirectory");
 
     }
 

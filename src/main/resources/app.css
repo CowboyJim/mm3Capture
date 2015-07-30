@@ -1,0 +1,10 @@
+.greyout .table-column-cell{
+    -fx-background-color:rgb(243,243,243);
+    -fx-border-color:rgb(159,159,159);
+}
+
+.priorityLow {
+    -fx-control-inner-background: palegreen;
+    -fx-accent: derive(-fx-control-inner-background, -40%);
+    -fx-cell-hover-color: derive(-fx-control-inner-background, -20%);
+}

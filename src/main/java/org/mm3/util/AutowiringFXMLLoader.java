@@ -35,12 +35,14 @@ public class AutowiringFXMLLoader extends Stage {
     public AutowiringFXMLLoader(String fxmlFileName, Window owner, ApplicationContext context, StageStyle style) {
         super(style);
 
+        this.context = context;
         try {
             initOwner(owner);
             FXMLLoader loader = new FXMLLoader();
 
             URL fxmlUrl = this.getClass().getClassLoader().getResource(fxmlFileName);
-            Parent rootElement = (Parent) loader.load(fxmlUrl);
+            loader.setLocation(fxmlUrl);
+            Parent rootElement = (Parent) loader.load();
 
             setScene(new Scene(rootElement));
             controller = loader.getController();

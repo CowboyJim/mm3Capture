@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.*?>
+<?import java.net.*?>
 <?import java.util.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -81,7 +82,7 @@
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="P" fx:id="lCh14" />
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="Q" fx:id="rEmg" />
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="R" fx:id="rCh1" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="S" fx:id="rCh2" />
+        <TableColumn editable="false" id="rCh2" prefWidth="38.0" sortable="false" style="" styleClass=".greyout" text="S" fx:id="rCh2" />
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="T" fx:id="rCh3" />
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="U" fx:id="rCh4" />
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="V" fx:id="rCh5" />
@@ -90,11 +91,14 @@
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="Y" fx:id="rCh8" />
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="Z" fx:id="rCh9" />
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="AA" fx:id="rCh10" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="AB" fx:id="rCh11" />
+        <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="38.0" sortable="false" text="AB" fx:id="rCh11" />
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="AC" fx:id="rCh12" />
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="AD" fx:id="rCh13" />
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="AE" fx:id="rCh14" />
       </columns>
     </TableView>
   </children>
+  <stylesheets>
+    <URL value="@app.css" />
+  </stylesheets>
 </VBox>

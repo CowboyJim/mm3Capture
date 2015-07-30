@@ -162,8 +162,7 @@ public class MM3StreamParser implements DataParser {
         int packetLength = buffer.getByteAt(index + 1);
         int nextSyncByte = buffer.getByteAt(index + packetLength);
 
-        if (nextSyncByte == -1) return false;
-        return nextSyncByte == flipSyncByte(syncByte);
+        return nextSyncByte != -1 && nextSyncByte == flipSyncByte(syncByte);
     }
 
     protected byte flipSyncByte(byte syncByte) {

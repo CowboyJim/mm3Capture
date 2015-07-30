@@ -2,14 +2,15 @@ package org.mm3.alerts;
 
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.mm3.config.AppConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,6 +19,9 @@ import java.util.Map;
  *         Date: 7/21/15
  */
 public class AlertManager {
+
+    @Autowired
+    protected AppConfig appConfig;
 
     public Map<String, GroovyObject> getAlertClasses() {
         return alertClasses;
@@ -32,10 +36,10 @@ public class AlertManager {
         Class alertClass;
         GroovyObject alertObj;
 
-        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(this.getClass().getClassLoader());
-        Resource[] alertFiles = resolver.getResources("classpath:/**/*.alert");
-        for (Resource resource : alertFiles) {
-            File file = resource.getFile();
+        File directory = new File(appConfig.getAlertDirectory());
+        File[] alertFiles = directory.listFiles();
+
+        for (File file : alertFiles) {
             if (file.isFile()) {
                 alertClass = classLoader.parseClass(file);
                 alertObj = (GroovyObject) alertClass.newInstance();

@@ -1,32 +1,45 @@
+
 package org.mm3.view;
 
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.StrokeType;
+import org.mm3.alerts.Alert;
+import groovy.lang.GroovyObject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
 import org.mm3.alerts.AlertManager;
 import org.mm3.config.AppConfig;
-import org.mm3.config.SpringConfig;
 import org.mm3.data.MM3EventGenerator;
+import org.mm3.model.MM3DataPacket;
 import org.mm3.util.CommonDialogs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created with IntelliJ IDEA.
  * User: CowboyJim
  * Date: 7/13/15
  */
-public class MainAppController implements MainController {
+public class MainAppController implements MainController, Observer {
 
     protected Logger LOG = LoggerFactory.getLogger(MainAppController.class);
+
+    @Autowired
+    private ApplicationContext context;
 
     @Autowired
     private MM3EventGenerator comGenerator;
@@ -35,15 +48,13 @@ public class MainAppController implements MainController {
     private CommonDialogs commonDialogs;
 
     @Autowired
-    private SpringConfig springConfig;
-
-    @Autowired
     private AppConfig appConfig;
 
     @Autowired
     private AlertManager alterManager;
 
     private boolean comConnected = false;
+    private Map<String, Circle> alertUiMap = new LinkedHashMap<>();
 
     @FXML
     private ToggleButton comConnectBtn;
@@ -61,6 +72,8 @@ public class MainAppController implements MainController {
     private Label statusOutputLbl;
     @FXML
     private TabPane tabPane;
+    @FXML
+    private HBox alertVbox;
 
     public TabPane getTabPane() {
         return tabPane;
@@ -82,13 +95,13 @@ public class MainAppController implements MainController {
         });
 
         settingsDialog.setOnAction(event -> {
-            showConfigurationDialog();
+            ConfigurationDialog dialog = context.getBean(ConfigurationDialog.class, null);
+            dialog.showAndWait();
         });
 
         closeMenuItem.setOnAction(event -> {
             Platform.exit();
         });
-
     }
 
 
@@ -96,6 +109,18 @@ public class MainAppController implements MainController {
     public void init() {
         // Bind the port property to the UI label
         currentPortID.textProperty().bindBidirectional(appConfig.comPortProperty());
+
+        // Dynamically create all alerts
+        Map<String, GroovyObject> alerts = alterManager.getAlertClasses();
+        for (String key : alerts.keySet()) {
+            Circle alarm = new Circle(11.0, Color.web("green"));
+            alarm.setRadius(11.0);
+            alarm.setStrokeType(StrokeType.INSIDE);
+            alarm.setStroke(Color.web("black"));
+            Label label = new Label(key);
+            alertVbox.getChildren().addAll(alarm, label);
+            alertUiMap.put(key, alarm);
+        }
     }
 
     /**
@@ -131,9 +156,8 @@ public class MainAppController implements MainController {
         List<String> choices = new ArrayList<>();
 
         String[] portNames = SerialPortList.getPortNames();
-        for (int i = 0; i < portNames.length; i++) {
-            choices.add(portNames[i]);
-        }
+        Collections.addAll(choices, portNames);
+
         if (choices.size() > 0) {
             portID = choices.get(0);
         } else {
@@ -151,11 +175,28 @@ public class MainAppController implements MainController {
             appConfig.saveProperties();
 
         });
-
     }
 
     @Override
     public void setStatusMessage(String message) {
         statusOutputLbl.setText(message);
+    }
+
+    @Override
+    public void update(Observable o, Object mm3Packet) {
+
+        // check all alerts conditions
+        Map<String, GroovyObject> alerts = alterManager.getAlertClasses();
+        for (String key : alerts.keySet()) {
+            Alert alert = (Alert) alerts.get(key);
+            Circle alertImage = alertUiMap.get(key);
+
+            boolean triggered = alert.isConditionMet((MM3DataPacket) mm3Packet);
+            if (triggered) {
+                alertImage.setFill(Color.web("red"));
+            } else {
+                alertImage.setFill(Color.web("green"));
+            }
+        }
     }
 }

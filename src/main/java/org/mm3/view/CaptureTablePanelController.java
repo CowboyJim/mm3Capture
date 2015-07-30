@@ -8,7 +8,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import javafx.util.Callback;
 import org.mm3.config.AppConfig;
 import org.mm3.config.SpringConfig;
 import org.mm3.model.MM3DataPacket;
@@ -175,7 +177,23 @@ public class CaptureTablePanelController implements Observer, NestedController {
         rCh13.setCellValueFactory(cellData -> cellData.getValue().rCh13Property());
         rCh14.setCellValueFactory(cellData -> cellData.getValue().rCh14Property());
 
-        ekgData.add(new EKGDataPacket(HEADER));
+        // Table cell coloring
+/*        rCh11.setCellFactory(new Callback<TableColumn<EKGDataPacket, String>, TableCell<EKGDataPacket, String>>() {
+            @Override
+            public TableCell<EKGDataPacket, String> call(TableColumn<EKGDataPacket, String> param) {
+                return new TableCell<EKGDataPacket, String>() {
+                    @Override
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                     //   this.setTextFill(Color.BLUE);
+                        //this.setStyle("-fx-font-weight: bold;");
+                    }
+                };
+            }
+        });*/
+
+                ekgData.add(new EKGDataPacket(HEADER));
+
 
         ekgData.add(new EKGDataPacket(1, new byte[]{0x05, (byte) 0x27, (byte) 0x93, (byte) 0x04, (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x03, (byte) 0x1C, (byte) 0x60, (byte) 0x9A,
                 (byte) 0xB3, (byte) 0xCC, (byte) 0xE9, (byte) 0xff, (byte) 0xff, (byte) 0xF1, (byte) 0xD8, (byte) 0xBF, (byte) 0x9A,
@@ -197,12 +215,8 @@ public class CaptureTablePanelController implements Observer, NestedController {
         ekgDataTable.addEventHandler(KeyEvent.KEY_TYPED, event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 System.out.println("Enter Key ");
-
             }
-//            System.out.println(event.getCode());
-//            System.out.println(event.getEventType());
             event.consume();
-
         });
 
         startCaptureBtn.setOnAction(event -> {

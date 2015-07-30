@@ -7,7 +7,7 @@ public class ConversionUtils {
     public static int byteArrayToLeInt(byte[] encodedValue) {
         int value = (encodedValue[3] << (Byte.SIZE * 3));
         value |= (encodedValue[2] & 0xFF) << (Byte.SIZE * 2);
-        value |= (encodedValue[1] & 0xFF) << (Byte.SIZE * 1);
+        value |= (encodedValue[1] & 0xFF) << (Byte.SIZE);
         value |= (encodedValue[0] & 0xFF);
         return value;
     }

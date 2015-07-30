@@ -168,7 +168,7 @@ public class ByteRingBuffer {
      * @return
      */
     public int indexOf(byte searchByte, int offset) {
-        int index = 0 + offset;
+        int index = offset;
         //traverse ring until match is found
         for (int x = (rBufPos + offset) % rBufSize; index < getUsed(); x = (x + 1) % rBufSize) {
             if (searchByte == rBuf[x]) {
@@ -180,13 +180,12 @@ public class ByteRingBuffer {
     }
 
     /**
-     *
      * @param index
      * @return
      */
     public byte getByteAt(int index) {
         if (getUsed() < index) {
-           return -1;
+            return -1;
         }
         return rBuf[(rBufPos + index) % rBufSize];
     }

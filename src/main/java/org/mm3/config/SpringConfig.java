@@ -9,6 +9,7 @@ import org.mm3.data.MM3EventGenerator;
 import org.mm3.data.MM3StreamParser;
 import org.mm3.util.AutowiringFXMLLoader;
 import org.mm3.util.CommonDialogs;
+import org.mm3.view.ConfigurationDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +83,13 @@ public class SpringConfig {
     }
 
     @Bean
-    public AlertManager AlterManager(){
+    public AlertManager AlterManager() {
         return new AlertManager();
+    }
+
+    @Bean
+    @Scope(value = "prototype")
+    public ConfigurationDialog ConfigurationDialog() {
+        return new ConfigurationDialog();
     }
 }
