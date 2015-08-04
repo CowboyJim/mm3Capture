@@ -81,10 +81,10 @@
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="O" fx:id="lCh13" />
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="P" fx:id="lCh14" />
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="Q" fx:id="rEmg" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="R" fx:id="rCh1" />
-        <TableColumn editable="false" id="rCh2" prefWidth="38.0" sortable="false" style="" styleClass=".greyout" text="S" fx:id="rCh2" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" style="" text="R" fx:id="rCh1" />
+        <TableColumn editable="false" id="rCh2" prefWidth="38.0" sortable="false" styleClass="table-cell-right" text="S" fx:id="rCh2" />
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="T" fx:id="rCh3" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="U" fx:id="rCh4" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" styleClass="" text="U" fx:id="rCh4" />
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="V" fx:id="rCh5" />
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="W" fx:id="rCh6" />
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="X" fx:id="rCh7" />
