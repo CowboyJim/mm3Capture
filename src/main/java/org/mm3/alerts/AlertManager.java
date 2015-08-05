@@ -22,12 +22,11 @@ public class AlertManager {
 
     @Autowired
     protected AppConfig appConfig;
+    protected Map<String, GroovyObject> alertClasses = new HashMap<>();
 
     public Map<String, GroovyObject> getAlertClasses() {
         return alertClasses;
     }
-
-    protected Map<String, GroovyObject> alertClasses = new HashMap<>();
 
     @PostConstruct
     public void loadAlerts() throws IOException, IllegalAccessException, InstantiationException {
@@ -40,7 +39,7 @@ public class AlertManager {
         File[] alertFiles = directory.listFiles();
 
         for (File file : alertFiles) {
-            if (file.isFile()) {
+            if (file.isFile() && file.getName().contains("alert")) {
                 alertClass = classLoader.parseClass(file);
                 alertObj = (GroovyObject) alertClass.newInstance();
                 alertClasses.put((String) alertObj.getProperty("name"), alertObj);

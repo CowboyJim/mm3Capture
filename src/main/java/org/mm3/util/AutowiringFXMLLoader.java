@@ -12,8 +12,6 @@ import org.mm3.view.MainController;
 import org.mm3.view.NestedController;
 import org.springframework.context.ApplicationContext;
 
-import java.io.File;
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
 
@@ -42,7 +40,7 @@ public class AutowiringFXMLLoader extends Stage {
 
             URL fxmlUrl = this.getClass().getClassLoader().getResource(fxmlFileName);
             loader.setLocation(fxmlUrl);
-            Parent rootElement = (Parent) loader.load();
+            Parent rootElement = loader.load();
 
             setScene(new Scene(rootElement));
             controller = loader.getController();

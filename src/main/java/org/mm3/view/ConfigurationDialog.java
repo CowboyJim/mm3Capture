@@ -6,12 +6,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import jssc.SerialPortList;
@@ -20,7 +18,6 @@ import org.mm3.config.SpringConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -68,7 +65,7 @@ public class ConfigurationDialog extends Stage implements Initializable {
         fxmlLoader.setController(this);
 
         try {
-            setScene(new Scene((Parent) fxmlLoader.load()));
+            setScene(new Scene(fxmlLoader.load()));
         } catch (IOException e) {
             e.printStackTrace();
         }

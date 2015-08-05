@@ -1,17 +1,14 @@
 package org.mm3;
 
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.util.Callback;
-
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created with IntelliJ IDEA.

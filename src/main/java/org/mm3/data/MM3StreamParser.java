@@ -39,8 +39,6 @@ public class MM3StreamParser implements DataParser {
             if ((packet = getEKGPacket()) == null) {
                 return;
             } else {
-
-                System.out.println("Packet decoded");
                 listener.packetReceived(packet);
             }
         }
@@ -68,7 +66,7 @@ public class MM3StreamParser implements DataParser {
         }
 
         // Read the EKG packet data from the buffer and flip the sync byte
-        byte packetByteArray[] = new byte[packetLength + 1];
+        byte packetByteArray[] = new byte[packetLength];
         buffer.read(packetByteArray);
         currentSyncByte = flipSyncByte(currentSyncByte);
 

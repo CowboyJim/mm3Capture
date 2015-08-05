@@ -1,19 +1,17 @@
 
 package org.mm3.view;
 
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.StrokeType;
-import org.mm3.alerts.Alert;
 import groovy.lang.GroovyObject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.StrokeType;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
+import org.mm3.alerts.Alert;
 import org.mm3.alerts.AlertManager;
 import org.mm3.config.AppConfig;
 import org.mm3.data.MM3EventGenerator;
@@ -25,9 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.PostConstruct;
-import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -74,15 +70,14 @@ public class MainAppController implements MainController, Observer {
     private TabPane tabPane;
     @FXML
     private HBox alertVbox;
-
-    public TabPane getTabPane() {
-        return tabPane;
-    }
-
     @FXML
     private CaptureTablePanelController captureTablePanelController;
     @FXML
     private VisualPanelController visualPanelController;
+
+    public TabPane getTabPane() {
+        return tabPane;
+    }
 
     @FXML
     private void initialize() {

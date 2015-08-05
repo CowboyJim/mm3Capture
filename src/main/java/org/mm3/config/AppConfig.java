@@ -4,8 +4,6 @@ import javafx.beans.property.SimpleStringProperty;
 import jssc.SerialPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 
 import java.io.*;
 import java.util.Properties;
@@ -14,7 +12,7 @@ import java.util.Properties;
  * Created with IntelliJ IDEA.
  * User: CowboyJim
  * Date: 7/7/15
- * <p/>
+ * <p>
  * Defaults:
  * public int baudrate = SerialPort.BAUDRATE_9600;
  * public int parity = SerialPort.PARITY_NONE;
@@ -32,8 +30,19 @@ public class AppConfig {
     protected int databits = SerialPort.DATABITS_8;
     protected boolean rts = false;
     protected boolean dtr = true;
-    protected String defaultDirectory = "./capture";
-    protected String alertDirectory = "c:\\temp";
+    protected String defaultDirectory = "mm3data";
+    protected String alertDirectory = "alerts";
+    protected Properties props;
+    protected SimpleStringProperty comPort = new SimpleStringProperty();
+
+    public AppConfig() {
+        props = readProperties();
+        setPortID(props.getProperty("portID"));
+        baudrate = Integer.valueOf(props.getProperty("baudrate"));
+        parity = Integer.valueOf(props.getProperty("parity"));
+        stopbits = Integer.valueOf(props.getProperty("stopbits"));
+        databits = Integer.valueOf(props.getProperty("databits"));
+    }
 
     public String getAlertDirectory() {
         return alertDirectory;
@@ -43,29 +52,16 @@ public class AppConfig {
         this.alertDirectory = alertDirectory;
     }
 
-    protected Properties props;
-
-    protected SimpleStringProperty comPort = new SimpleStringProperty();
-
     public String getComPort() {
         return comPort.get();
-    }
-
-    public SimpleStringProperty comPortProperty() {
-        return comPort;
     }
 
     public void setComPort(String comPort) {
         this.comPort.set(comPort);
     }
 
-    public AppConfig() {
-        props = readProperties();
-        setPortID(props.getProperty("portID"));
-        baudrate = Integer.valueOf(props.getProperty("baudrate"));
-        parity = Integer.valueOf(props.getProperty("parity"));
-        stopbits = Integer.valueOf(props.getProperty("stopbits"));
-        databits = Integer.valueOf(props.getProperty("databits"));
+    public SimpleStringProperty comPortProperty() {
+        return comPort;
     }
 
     public String getPortID() {
@@ -227,8 +223,17 @@ public class AppConfig {
         props.setProperty("databits", "8");
         props.setProperty("parity", "0");
         props.setProperty("stopbits", "1");
-        props.setProperty("defaultDirectory", "./capture");
 
+        File defaultDir = new File(System.getProperty("user.dir") + File.separatorChar + "mm3data");
+
+        if (!defaultDir.exists()) {
+            if (defaultDir.mkdirs()) {
+                props.setProperty("defaultDirectory", defaultDir.getPath());
+                props.setProperty("alertDirectory", defaultDir.getPath());
+            } else {
+                LOG.error("Can't make default app directory");
+            }
+        }
         return props;
     }
 }

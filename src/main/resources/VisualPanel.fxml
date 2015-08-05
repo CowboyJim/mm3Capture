@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.chart.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.*?>
-
-<VBox prefHeight="800.0" prefWidth="1100.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="org.mm3.view.VisualPanelController">
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.layout.VBox?>
+<?import org.mm3.view.CustomizedStackedBarChart?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="800.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/2.2"
+      fx:controller="org.mm3.view.VisualPanelController">
   <children>
-    <StackedBarChart fx:id="barchart">
+    <CustomizedStackedBarChart fx:id="barchart">
       <xAxis>
-        <NumberAxis fx:id="xAxis" autoRanging="false" lowerBound="-260.0" minorTickCount="0" minorTickLength="1.0" side="LEFT" tickLength="5.0" tickUnit="40.0" upperBound="260.0" />
+        <NumberAxis fx:id="xAxis" autoRanging="false" lowerBound="-260.0" minorTickCount="0" minorTickLength="1.0"
+                    side="LEFT" tickLength="5.0" tickUnit="40.0" upperBound="260.0" animated="false"/>
       </xAxis>
       <yAxis>
         <CategoryAxis id="categoryAxis1" fx:id="yAxis" side="BOTTOM" />
       </yAxis>
-    </StackedBarChart>
+    </CustomizedStackedBarChart>
   </children>
 </VBox>

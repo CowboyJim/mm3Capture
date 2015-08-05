@@ -2,11 +2,10 @@ package org.mm3.alerts;
 
 import groovy.lang.GroovyObject;
 import org.mm3.model.MM3DataPacket;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.*;
 
 import java.util.Map;
+
+import static org.testng.Assert.*;
 
 /**
  * Created with IntelliJ IDEA.

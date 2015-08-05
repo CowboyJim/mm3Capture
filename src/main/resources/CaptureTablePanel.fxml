@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.net.*?>
-<?import java.util.*?>
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.input.*?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.*?>
-<?import javafx.scene.text.*?>
-
-<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="800.0" prefWidth="1100.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="org.mm3.view.CaptureTablePanelController">
+<?import java.net.URL?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+      prefHeight="800.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/2.2"
+      fx:controller="org.mm3.view.CaptureTablePanelController">
   <children>
     <GridPane minHeight="30.0">
       <children>
@@ -64,37 +61,35 @@
     </GridPane>
     <TableView fx:id="ekgDataTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="513.0" prefWidth="800.0" VBox.vgrow="ALWAYS">
       <columns>
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="A" fx:id="sequence" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="B" fx:id="lEmg" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="C" fx:id="lCh1" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="D" fx:id="lCh2" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="E" fx:id="lCh3" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="F" fx:id="lCh4" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="G" fx:id="lCh5" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="H" fx:id="lCh6" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="I" fx:id="lCh7" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="J" fx:id="lCh8" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="K" fx:id="lCh9" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="L" fx:id="lCh10" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="M" fx:id="lCh11" />
+        <TableColumn editable="false" prefWidth="75.0" sortable="false" text="A" fx:id="sequence"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="B" fx:id="lCh1"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="C" fx:id="lCh2"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="D" fx:id="lCh3"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="E" fx:id="lCh4"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="F" fx:id="lCh5"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="G" fx:id="lCh6"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="H" fx:id="lCh7"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="I" fx:id="lCh8"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="J" fx:id="lCh9"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="K" fx:id="lCh10"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="L" fx:id="lCh11"/>
         <TableColumn editable="false" prefWidth="38.0" sortable="false" text="M" fx:id="lCh12" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="O" fx:id="lCh13" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="P" fx:id="lCh14" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="Q" fx:id="rEmg" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" style="" text="R" fx:id="rCh1" />
-        <TableColumn editable="false" id="rCh2" prefWidth="38.0" sortable="false" styleClass="table-cell-right" text="S" fx:id="rCh2" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="T" fx:id="rCh3" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" styleClass="" text="U" fx:id="rCh4" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="V" fx:id="rCh5" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="W" fx:id="rCh6" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="X" fx:id="rCh7" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="Y" fx:id="rCh8" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="Z" fx:id="rCh9" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="AA" fx:id="rCh10" />
-        <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="38.0" sortable="false" text="AB" fx:id="rCh11" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="AC" fx:id="rCh12" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="AD" fx:id="rCh13" />
-        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="AE" fx:id="rCh14" />
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="N" fx:id="lCh13"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="O" fx:id="lCh14"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="P" fx:id="rCh1"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="Q" fx:id="rCh2"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="R" fx:id="rCh3"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="S" fx:id="rCh4"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="T" fx:id="rCh5"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="U" fx:id="rCh6"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="V" fx:id="rCh7"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="W" fx:id="rCh8"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="X" fx:id="rCh9"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="Y" fx:id="rCh10"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="Z" fx:id="rCh11"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="AA" fx:id="rCh12"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="AB" fx:id="rCh13"/>
+        <TableColumn editable="false" prefWidth="38.0" sortable="false" text="AC" fx:id="rCh14"/>
       </columns>
     </TableView>
   </children>

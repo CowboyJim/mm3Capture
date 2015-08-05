@@ -4,13 +4,12 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import org.mm3.model.EKGDataPacket;
+import org.mm3.data.MM3EventGenerator;
 import org.mm3.model.MM3DataPacket;
 import org.mm3.util.CommonDialogs;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Observable;
@@ -25,21 +24,22 @@ import java.util.Observer;
 public class VisualPanelController implements Observer, NestedController {
 
     private static final String[] channel_labels = new String[]{"0.75", "1.5", "3", "4.5", "6", "7.5", "9", "10.5", "12.5", "15", "19", "24", "30", "38"};
-
     private static final int CHANNELS = 14;
-
+    protected Logger LOG = LoggerFactory.getLogger(CaptureTablePanelController.class);
     protected MainController controller;
 
     protected boolean tabIsVisible;
 
     @Autowired
     private CommonDialogs commonDialogs;
+    @Autowired
+    private MM3EventGenerator eventGenerator;
 
     private XYChart.Series<Number, String> leftChannel;
     private XYChart.Series<Number, String> rightChannel;
 
     @FXML
-    private StackedBarChart<Number, String> barchart;
+    private CustomizedStackedBarChart<Number, String> barchart;
     @FXML
     private CategoryAxis yAxis;
     @FXML
@@ -77,10 +77,12 @@ public class VisualPanelController implements Observer, NestedController {
 
             if (newValue.intValue() == 1) {
                 tabIsVisible = true;
+                eventGenerator.addObserver(this);
             } else {
                 tabIsVisible = false;
+                eventGenerator.deleteObserver(this);
             }
-            System.out.println("tabIsVisible = " + tabIsVisible);
+            LOG.debug("visual tabIsVisible = " + tabIsVisible);
 
         });
     }
@@ -88,17 +90,17 @@ public class VisualPanelController implements Observer, NestedController {
     @Override
     public void update(Observable o, Object mm3Packet) {
         if (tabIsVisible) {
-            int seqNum = MM3DataPacket.getSequenceNum();
+            //int seqNum = MM3DataPacket.getSequenceNum();
             MM3DataPacket packet = (MM3DataPacket) mm3Packet;
-            populateNewChannelValues(packet.getLeftChannelValues());
-            populateNewChannelValues(packet.getRightChannelValues());
+            populateNewChannelValues(leftChannel, packet.getLeftChannelValues(), -1);
+            populateNewChannelValues(rightChannel, packet.getRightChannelValues(), 1);
         }
     }
 
-    private void populateNewChannelValues(int[] value) {
+    private void populateNewChannelValues(XYChart.Series<Number, String> channel, int[] value, int multiplier) {
         int counter = 0;
-        for (XYChart.Data<Number, String> dataValue : leftChannel.getData()) {
-            dataValue.setXValue(value[counter++]);
+        for (XYChart.Data<Number, String> dataValue : channel.getData()) {
+            dataValue.setXValue(value[counter++] * multiplier);
         }
     }
 }

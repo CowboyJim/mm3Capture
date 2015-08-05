@@ -1,6 +1,10 @@
 package org.mm3.model;
 
 import org.mm3.util.ConversionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,7 +15,7 @@ public class MM3DataPacket {
 
     public static final int EKG_PACKET_SIZE = 39;
     private static int sequenceCount = 0;
-
+    protected Logger LOG = LoggerFactory.getLogger(MM3DataPacket.class);
     protected byte[] packetData;
     protected int[] intPacketData;
 
@@ -19,6 +23,16 @@ public class MM3DataPacket {
         this.packetData = packetData;
         sequenceCount++;
         this.intPacketData = getAsIntArray(packetData);
+    }
+
+    public static int getSequenceNum() {
+        return sequenceCount;
+    }
+
+    public static void resetSequenceNum() {
+        synchronized (MM3DataPacket.class) {
+            sequenceCount = 0;
+        }
     }
 
     /**
@@ -42,26 +56,22 @@ public class MM3DataPacket {
                 data[x] = ConversionUtils.byteToInt(packetData[x]);
             }
         }
+        LOG.debug(Arrays.toString(data));
+
         return data;
     }
 
     public int[] getLeftChannelValues() {
 
-        return null;
+        int channelData[] = new int[14];
+        System.arraycopy(intPacketData, 10, channelData, 0, 14);
+        return channelData;
     }
 
     public int[] getRightChannelValues() {
 
-        return null;
-    }
-
-    public static int getSequenceNum() {
-        return sequenceCount;
-    }
-
-    public static void resetSequenceNum() {
-        synchronized (MM3DataPacket.class) {
-            sequenceCount = 0;
-        }
+        int channelData[] = new int[14];
+        System.arraycopy(intPacketData, 25, channelData, 0, 14);
+        return channelData;
     }
 }

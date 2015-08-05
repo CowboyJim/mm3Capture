@@ -10,5 +10,5 @@ import org.mm3.model.MM3DataPacket;
  */
 public interface MM3PacketListener {
 
-    public void packetReceived(MM3DataPacket packet);
+    void packetReceived(MM3DataPacket packet);
 }

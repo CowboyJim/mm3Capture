@@ -6,16 +6,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-import javafx.util.Callback;
 import org.mm3.config.AppConfig;
 import org.mm3.config.SpringConfig;
-import org.mm3.model.MM3DataPacket;
 import org.mm3.data.MM3EventGenerator;
 import org.mm3.model.EKGDataPacket;
+import org.mm3.model.MM3DataPacket;
 import org.mm3.util.CommonDialogs;
 import org.mm3.util.ConversionUtils;
 import org.slf4j.Logger;
@@ -40,24 +36,19 @@ public class CaptureTablePanelController implements Observer, NestedController {
             "EMG_R", "0.75", "1.5", "3", "4.5", "6", "7.5", "9", "10.5", "12.5", "15", "19", "24", "30", "38"};
     private final ConversionUtils conversionUtils = new ConversionUtils();
     protected Logger LOG = LoggerFactory.getLogger(CaptureTablePanelController.class);
-
+    protected SimpleDateFormat dataFormatter = new SimpleDateFormat("yyyy-MM-dd.HH.mm.ss");
     @Autowired
     private CommonDialogs commonDialogs;
     @Autowired
     private MM3EventGenerator eventGenerator;
     @Autowired
     private SpringConfig springConfig;
-
     private MainController mainController;
-
     @Autowired
     private AppConfig appConfig;
-
-    protected SimpleDateFormat dataFormatter = new SimpleDateFormat("yyyy-MM-dd.HH.mm.ss");
-
     private ObservableList<EKGDataPacket> ekgData = FXCollections.observableArrayList();
 
-    private BooleanProperty dataNotPresent = new SimpleBooleanProperty(false);
+    private BooleanProperty dataNotPresent = new SimpleBooleanProperty(true);
 
     private boolean capturing = false;
 
@@ -80,8 +71,6 @@ public class CaptureTablePanelController implements Observer, NestedController {
     private TableView<EKGDataPacket> ekgDataTable;
     @FXML
     private TableColumn<EKGDataPacket, String> sequence;
-    @FXML
-    private TableColumn<EKGDataPacket, String> lEmg;
     @FXML
     private TableColumn<EKGDataPacket, String> lCh1;
     @FXML
@@ -110,8 +99,6 @@ public class CaptureTablePanelController implements Observer, NestedController {
     private TableColumn<EKGDataPacket, String> lCh13;
     @FXML
     private TableColumn<EKGDataPacket, String> lCh14;
-    @FXML
-    private TableColumn<EKGDataPacket, String> rEmg;
     @FXML
     private TableColumn<EKGDataPacket, String> rCh1;
     @FXML
@@ -145,7 +132,6 @@ public class CaptureTablePanelController implements Observer, NestedController {
     private void initialize() {
 
         sequence.setCellValueFactory(cellData -> cellData.getValue().sequenceProperty());
-        lEmg.setCellValueFactory(cellData -> cellData.getValue().lEmgProperty());
         lCh1.setCellValueFactory(cellData -> cellData.getValue().lCh1Property());
         lCh2.setCellValueFactory(cellData -> cellData.getValue().lCh2Property());
         lCh3.setCellValueFactory(cellData -> cellData.getValue().lCh3Property());
@@ -161,7 +147,6 @@ public class CaptureTablePanelController implements Observer, NestedController {
         lCh13.setCellValueFactory(cellData -> cellData.getValue().lCh13Property());
         lCh14.setCellValueFactory(cellData -> cellData.getValue().lCh14Property());
 
-        rEmg.setCellValueFactory(cellData -> cellData.getValue().rEmgProperty());
         rCh1.setCellValueFactory(cellData -> cellData.getValue().rCh1Property());
         rCh2.setCellValueFactory(cellData -> cellData.getValue().rCh2Property());
         rCh3.setCellValueFactory(cellData -> cellData.getValue().rCh3Property());
@@ -177,33 +162,17 @@ public class CaptureTablePanelController implements Observer, NestedController {
         rCh13.setCellValueFactory(cellData -> cellData.getValue().rCh13Property());
         rCh14.setCellValueFactory(cellData -> cellData.getValue().rCh14Property());
 
-        // Table cell coloring
-/*        rCh11.setCellFactory(new Callback<TableColumn<EKGDataPacket, String>, TableCell<EKGDataPacket, String>>() {
-            @Override
-            public TableCell<EKGDataPacket, String> call(TableColumn<EKGDataPacket, String> param) {
-                return new TableCell<EKGDataPacket, String>() {
-                    @Override
-                    public void updateItem(String item, boolean empty) {
-                        super.updateItem(item, empty);
-                     //   this.setTextFill(Color.BLUE);
-                        //this.setStyle("-fx-font-weight: bold;");
-                    }
-                };
-            }
-        });*/
 
-                ekgData.add(new EKGDataPacket(HEADER));
+        ekgData.add(new EKGDataPacket(HEADER));
 
-
-        ekgData.add(new EKGDataPacket(1, new byte[]{0x05, (byte) 0x27, (byte) 0x93, (byte) 0x04, (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x03, (byte) 0x1C, (byte) 0x60, (byte) 0x9A,
+/*        ekgData.add(new EKGDataPacket(1, new byte[]{0x05, (byte) 0x27, (byte) 0x93, (byte) 0x04, (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x03, (byte) 0x1C, (byte) 0x60, (byte) 0x9A,
                 (byte) 0xB3, (byte) 0xCC, (byte) 0xE9, (byte) 0xff, (byte) 0xff, (byte) 0xF1, (byte) 0xD8, (byte) 0xBF, (byte) 0x9A,
                 0x60, (byte) 0x19, (byte) 0x03, (byte) 0x1C, (byte) 0x60, (byte) 0x9A, (byte) 0xB3, (byte) 0xCC, (byte) 0xE9, (byte) 0xff, (byte) 0xff, (byte) 0xF1,
                 (byte) 0xD8, (byte) 0xBF, (byte) 0x9A, (byte) 0x60, (byte) 0x19}));
         ekgData.add(new EKGDataPacket(2, new byte[]{0x0a, (byte) 0x27, (byte) 0x93, (byte) 0x04, (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x03, (byte) 0x1C, (byte) 0x60, (byte) 0x9A,
                 (byte) 0xB3, (byte) 0xCC, (byte) 0xE9, (byte) 0xff, (byte) 0xff, (byte) 0xF1, (byte) 0xD8, (byte) 0xBF, (byte) 0x9A,
                 0x60, (byte) 0x19, (byte) 0x03, (byte) 0x1C, (byte) 0x60, (byte) 0x9A, (byte) 0xB3, (byte) 0xCC, (byte) 0xE9, (byte) 0xff, (byte) 0xff, (byte) 0xF1,
-                (byte) 0xD8, (byte) 0xBF, (byte) 0x9A, (byte) 0x60, (byte) 0x19}));
-
+                (byte) 0xD8, (byte) 0xBF, (byte) 0x9A, (byte) 0x60, (byte) 0x19}));*/
 
         ekgDataTable.setItems(ekgData);
         progressBar.setVisible(false);
@@ -212,12 +181,12 @@ public class CaptureTablePanelController implements Observer, NestedController {
         clearDataBtn.disableProperty().bindBidirectional(dataNotPresent);
         exportDataMenu.disableProperty().bindBidirectional(dataNotPresent);
 
-        ekgDataTable.addEventHandler(KeyEvent.KEY_TYPED, event -> {
+/*        ekgDataTable.addEventHandler(KeyEvent.KEY_TYPED, event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 System.out.println("Enter Key ");
             }
             event.consume();
-        });
+        });*/
 
         startCaptureBtn.setOnAction(event -> {
             toggleCapture(true);
@@ -239,7 +208,7 @@ public class CaptureTablePanelController implements Observer, NestedController {
          *
          */
         clearDataBtn.setOnAction(event -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION.CONFIRMATION);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmation Dialog");
             alert.setHeaderText(null);
             alert.setContentText("Are you sure you want to delete the table data?");
@@ -250,7 +219,6 @@ public class CaptureTablePanelController implements Observer, NestedController {
             } else {
                 LOG.debug("Cancel Data clear");
             }
-
         });
 
         saveDataMenu.setOnAction(event -> {
@@ -288,8 +256,8 @@ public class CaptureTablePanelController implements Observer, NestedController {
     @Override
     public void update(Observable o, Object mm3Packet) {
         if (capturing) {
-            if (dataNotPresent.get() == false) {
-                dataNotPresent.set(true);
+            if (dataNotPresent.get() == true) {
+                dataNotPresent.set(false);
             }
             ekgData.add(new EKGDataPacket(MM3DataPacket.getSequenceNum(), ((MM3DataPacket) mm3Packet).getByteArray()));
         }
@@ -302,7 +270,7 @@ public class CaptureTablePanelController implements Observer, NestedController {
         try {
             fos = new FileOutputStream(outputFile);
             for (int x = 1; x < ekgData.size(); x++) {
-                fos.write(conversionUtils.leIntToByteArray(ekgData.get(x).getPacketNum()));
+                fos.write(ConversionUtils.leIntToByteArray(ekgData.get(x).getPacketNum()));
                 fos.write(ekgData.get(x).getPacket());
             }
             mainController.setStatusMessage("File successfully saved");
