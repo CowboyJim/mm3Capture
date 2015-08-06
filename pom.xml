@@ -1,5 +1,5 @@
 <!--
-
+  Maven POM for
 
 -->
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
@@ -15,7 +15,9 @@
         <!--  the default class that has the public static void main(String[]) method -->
         <main.class>org.mm3.MainApp</main.class>
         <application.dist>${project.build.directory}/dist</application.dist>
-        <javafx.lib.ant-javafx.jar>/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/lib/ant-javafx.jar
+        <!--        <javafx.lib.ant-javafx.jar>/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/lib/ant-javafx.jar
+                </javafx.lib.ant-javafx.jar>-->
+        <javafx.lib.ant-javafx.jar>C:\Tools\jdk8\lib/ant-javafx.jar
         </javafx.lib.ant-javafx.jar>
         <applet.width>1300</applet.width>
         <applet.height>800</applet.height>
@@ -108,35 +110,51 @@
                                             <!-- The target/classes folder which contains all resources and class files -->
                                             <fileset dir="${project.build.outputDirectory}"/>
                                         </fx:jar>
+
                                         <fx:resources id="appRes">
                                             <fx:fileset dir="${application.dist}" includes="*.jar"/>
                                             <fx:fileset dir="${application.dist}" includes="lib/*.jar"/>
-
                                         </fx:resources>
                                         <fileset dir="build/classes"/>
-<!--                                        <signjar keyStore="${basedir}\keystore.jks"
-                                                 destdir="${application.dist}"
-                                                 alias="certificatekey" storePass="" keyPass="">
-                                            <fileset dir="${application.dist}" includes="*.jar"/>
-                                            <fileset dir="${application.dist}" includes="lib/*.jar"/>
-                                        </signjar>-->
 
                                         <fx:deploy width="${applet.width}" height="${applet.height}"
-                                                   outdir="${application.dist}"  nativeBundles="exe"
-                                                   outfile="${application.title}">
-
+                                                   outdir="${application.dist}" outfile="${application.title}">
                                             <fx:application refId="Mm3CaptureApp"/>
-
                                             <fx:resources refid="appRes"/>
-                                            <fx:info title="Sample app: ${application.title}"
+                                            <fx:info title="Mind Mirror 3 Realtime Capture App: ${application.title}"
                                                      vendor="${application.vendor}"/>
-
                                         </fx:deploy>
                                     </target>
                                 </configuration>
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>2.7</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${application.dist}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${basedir}</directory>
+                                            <filtering>true</filtering>
+                                            <includes>
+                                                <include>mm3Capture.bat</include>
+                                                <include>mm3Capture.sh</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

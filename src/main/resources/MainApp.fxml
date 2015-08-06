@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
@@ -11,7 +12,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="org.mm3.view.MainAppController">
+<AnchorPane id="AnchorPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8.0.45" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mm3.view.MainAppController">
   <children>
     <BorderPane prefHeight="-1.0" prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <bottom>
@@ -19,7 +20,7 @@
           <children>
             <TitledPane animated="false" collapsible="false" expanded="true" minHeight="75.0" prefHeight="75.0" prefWidth="800.0" text="Alerts" VBox.vgrow="SOMETIMES">
               <content>
-                <VBox prefHeight="-1.0" prefWidth="100.0" spacing="5.0">
+                <VBox prefHeight="-1.0" prefWidth="100.0" spacing="5.0" styleClass="alert-hbox">
                   <children>
                     <HBox fx:id="alertVbox" prefHeight="-1.0" prefWidth="1191.0" spacing="10.0">
                       <padding>
@@ -33,7 +34,7 @@
                 </VBox>
               </content>
             </TitledPane>
-            <AnchorPane minHeight="24.0" prefHeight="24.0" prefWidth="1200.0" VBox.vgrow="NEVER">
+            <AnchorPane minHeight="24.0" prefHeight="24.0" prefWidth="1200.0" styleClass="status-bar" VBox.vgrow="NEVER">
               <children>
                 <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                   <children>
@@ -45,6 +46,7 @@
                   </padding>
                 </HBox>
                 <Label alignment="CENTER" text="Mind Mirror 3 Real Time Capture and Display" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <Hyperlink fx:id="sourceURLLink" layoutX="1066.0" layoutY="1.0" text="Source Code on GitHub" />
               </children>
             </AnchorPane>
           </children>
@@ -55,12 +57,12 @@
           <tabs>
             <Tab fx:id="captureTab" closable="false" text="Capture">
               <content>
-                <fx:include fx:id="captureTablePanel" source="CaptureTablePanel.fxml" prefHeight="900.0" prefWidth="1100.0" />
+                <fx:include fx:id="captureTablePanel" prefHeight="900.0" prefWidth="1100.0" source="CaptureTablePanel.fxml" />
               </content>
             </Tab>
             <Tab fx:id="displayTab" closable="false" text="Display">
               <content>
-                <fx:include fx:id="visualPanel" source="VisualPanel.fxml" prefHeight="800.0" prefWidth="1100.0" />
+                <fx:include fx:id="visualPanel" prefHeight="800.0" prefWidth="1100.0" source="VisualPanel.fxml" />
               </content>
             </Tab>
           </tabs>
@@ -73,33 +75,34 @@
               <menus>
                 <Menu mnemonicParsing="false" text="File">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="Settings..." fx:id="settingsDialog" />
-                    <MenuItem mnemonicParsing="false" text="Export..." fx:id="exportMenuItem" />
-                    <MenuItem id="closeMenuItem" mnemonicParsing="false" text="Close" fx:id="closeMenuItem">
+                    <MenuItem fx:id="settingsDialog" mnemonicParsing="false" text="Settings..." />
+                    <MenuItem fx:id="exportMenuItem" mnemonicParsing="false" text="Export..." />
+                    <MenuItem id="closeMenuItem" fx:id="closeMenuItem" mnemonicParsing="false" text="Close">
                       <accelerator>
                         <KeyCodeCombination alt="UP" code="Q" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                       </accelerator>
                     </MenuItem>
                   </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Delete" />
-                  </items>
-                </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="About" />
+                    <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" text="About" />
                   </items>
                 </Menu>
               </menus>
             </MenuBar>
-            <GridPane id="bannerGridePane" fx:id="bannerGridPane">
+            <GridPane id="bannerGridePane" fx:id="bannerGridPane" styleClass="banner">
               <children>
                 <Label text="Mind Mirror 3 Realtime Monitoring and Playback" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="0" GridPane.valignment="CENTER">
                   <font>
                     <Font size="16.0" />
                   </font>
+                           <padding>
+                              <Insets left="15.0" />
+                           </padding>
+                           <effect>
+                              <Glow />
+                           </effect>
                 </Label>
                 <HBox alignment="CENTER_RIGHT" prefHeight="-1.0" prefWidth="-1.0" spacing="10.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.hgrow="SOMETIMES" GridPane.rowIndex="0" GridPane.rowSpan="2147483647" GridPane.valignment="CENTER">
                   <fx:define>
@@ -107,7 +110,10 @@
                   </fx:define>
                   <children>
                     <Separator orientation="VERTICAL" prefHeight="200.0" />
-                    <ToggleButton fx:id="comConnectBtn" mnemonicParsing="false" text="Connect" toggleGroup="$comToggleGroup" />
+                    <ToggleButton fx:id="comConnectBtn" mnemonicParsing="false" text="Connect">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="comToggleGroup" />
+                                 </toggleGroup></ToggleButton>
                     <ToggleButton fx:id="comDisconnectBtn" mnemonicParsing="false" selected="true" text="Disconnect" toggleGroup="$comToggleGroup" />
                     <Separator orientation="VERTICAL" prefHeight="200.0" />
                     <Label text="Connect to Serial Port:" />

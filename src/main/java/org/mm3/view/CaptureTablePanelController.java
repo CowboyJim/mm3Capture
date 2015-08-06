@@ -34,6 +34,7 @@ public class CaptureTablePanelController implements Observer, NestedController {
 
     public static final String[] HEADER = new String[]{"Seq", "EMG_L", "0.75", "1.5", "3", "4.5", "6", "7.5", "9", "10.5", "12.5", "15", "19", "24", "30", "38",
             "EMG_R", "0.75", "1.5", "3", "4.5", "6", "7.5", "9", "10.5", "12.5", "15", "19", "24", "30", "38"};
+
     private final ConversionUtils conversionUtils = new ConversionUtils();
     protected Logger LOG = LoggerFactory.getLogger(CaptureTablePanelController.class);
     protected SimpleDateFormat dataFormatter = new SimpleDateFormat("yyyy-MM-dd.HH.mm.ss");
@@ -163,16 +164,15 @@ public class CaptureTablePanelController implements Observer, NestedController {
         rCh14.setCellValueFactory(cellData -> cellData.getValue().rCh14Property());
 
 
-        ekgData.add(new EKGDataPacket(HEADER));
-
-/*        ekgData.add(new EKGDataPacket(1, new byte[]{0x05, (byte) 0x27, (byte) 0x93, (byte) 0x04, (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x03, (byte) 0x1C, (byte) 0x60, (byte) 0x9A,
+      // ekgData.add(new EKGDataPacket(HEADER));
+        ekgData.add(new EKGDataPacket(1, new byte[]{0x05, (byte) 0x27, (byte) 0x93, (byte) 0x04, (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x03, (byte) 0x1C, (byte) 0x60, (byte) 0x9A,
                 (byte) 0xB3, (byte) 0xCC, (byte) 0xE9, (byte) 0xff, (byte) 0xff, (byte) 0xF1, (byte) 0xD8, (byte) 0xBF, (byte) 0x9A,
                 0x60, (byte) 0x19, (byte) 0x03, (byte) 0x1C, (byte) 0x60, (byte) 0x9A, (byte) 0xB3, (byte) 0xCC, (byte) 0xE9, (byte) 0xff, (byte) 0xff, (byte) 0xF1,
                 (byte) 0xD8, (byte) 0xBF, (byte) 0x9A, (byte) 0x60, (byte) 0x19}));
         ekgData.add(new EKGDataPacket(2, new byte[]{0x0a, (byte) 0x27, (byte) 0x93, (byte) 0x04, (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x03, (byte) 0x1C, (byte) 0x60, (byte) 0x9A,
                 (byte) 0xB3, (byte) 0xCC, (byte) 0xE9, (byte) 0xff, (byte) 0xff, (byte) 0xF1, (byte) 0xD8, (byte) 0xBF, (byte) 0x9A,
                 0x60, (byte) 0x19, (byte) 0x03, (byte) 0x1C, (byte) 0x60, (byte) 0x9A, (byte) 0xB3, (byte) 0xCC, (byte) 0xE9, (byte) 0xff, (byte) 0xff, (byte) 0xF1,
-                (byte) 0xD8, (byte) 0xBF, (byte) 0x9A, (byte) 0x60, (byte) 0x19}));*/
+                (byte) 0xD8, (byte) 0xBF, (byte) 0x9A, (byte) 0x60, (byte) 0x19}));
 
         ekgDataTable.setItems(ekgData);
         progressBar.setVisible(false);
@@ -232,7 +232,7 @@ public class CaptureTablePanelController implements Observer, NestedController {
     }
 
     private void clearTableData() {
-        ekgData.remove(1, ekgData.size());
+        ekgData.removeAll();
         dataNotPresent.set(true);
         mainController.setStatusMessage("Table cleared");
     }
@@ -269,7 +269,7 @@ public class CaptureTablePanelController implements Observer, NestedController {
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(outputFile);
-            for (int x = 1; x < ekgData.size(); x++) {
+            for (int x = 0; x < ekgData.size(); x++) {
                 fos.write(ConversionUtils.leIntToByteArray(ekgData.get(x).getPacketNum()));
                 fos.write(ekgData.get(x).getPacket());
             }
@@ -319,7 +319,7 @@ public class CaptureTablePanelController implements Observer, NestedController {
             }
             ps.println();
 
-            for (i = 1; i < ekgData.size(); i++) {
+            for (i = 0; i < ekgData.size(); i++) {
                 ps.print(ekgData.get(i).getPacketNum() + ",");
                 byte[] data = ekgData.get(i).getPacket();
                 for (int x = 0; x < data.length; x++) {

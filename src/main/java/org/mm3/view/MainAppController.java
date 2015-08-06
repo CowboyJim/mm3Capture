@@ -11,7 +11,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.StrokeType;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
-import org.mm3.alerts.Alert;
 import org.mm3.alerts.AlertManager;
 import org.mm3.config.AppConfig;
 import org.mm3.data.MM3EventGenerator;
@@ -23,6 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 /**
@@ -63,6 +65,8 @@ public class MainAppController implements MainController, Observer {
     @FXML
     private MenuItem exportMenuItem;
     @FXML
+    private MenuItem aboutMenuItem;
+    @FXML
     private Label currentPortID;
     @FXML
     private Label statusOutputLbl;
@@ -70,6 +74,8 @@ public class MainAppController implements MainController, Observer {
     private TabPane tabPane;
     @FXML
     private HBox alertVbox;
+    @FXML
+    private Hyperlink sourceURLLink;
     @FXML
     private CaptureTablePanelController captureTablePanelController;
     @FXML
@@ -96,6 +102,28 @@ public class MainAppController implements MainController, Observer {
 
         closeMenuItem.setOnAction(event -> {
             Platform.exit();
+        });
+        exportMenuItem.setOnAction(event -> {
+            Alert alert = new Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+            alert.setTitle("Unimplemented operation");
+            alert.setHeaderText(null);
+            alert.setContentText("This operation has not been implemented yet ");
+            alert.showAndWait();
+        });
+        aboutMenuItem.setOnAction(event -> {
+            Alert alert = new Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+            alert.setTitle("About Application");
+            alert.setHeaderText("Mind Mirror 3 Capture Application");
+            alert.setContentText("This application allows the user to connect a Mind Mirror 3 device directly to a COM port via " +
+                    "the fiber optic isolation cable and capture real-time EEG data from the device");
+            alert.showAndWait();
+        });
+        sourceURLLink.setOnAction(event -> {
+            try {
+                java.awt.Desktop.getDesktop().browse(new URI("https://github.com/CowboyJim/mm3Capture"));
+            } catch (Exception e) {
+                LOG.error("Error opening source git hub site", e);
+            }
         });
     }
 
@@ -185,7 +213,7 @@ public class MainAppController implements MainController, Observer {
         // check all alerts conditions
         Map<String, GroovyObject> alerts = alterManager.getAlertClasses();
         for (String key : alerts.keySet()) {
-            Alert alert = (Alert) alerts.get(key);
+            org.mm3.alerts.Alert alert = (org.mm3.alerts.Alert) alerts.get(key);
             Circle alertImage = alertUiMap.get(key);
 
             boolean triggered = alert.isConditionMet((MM3DataPacket) mm3Packet);
