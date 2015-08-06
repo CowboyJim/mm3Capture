@@ -39,7 +39,7 @@ public class AlertManager {
         File[] alertFiles = directory.listFiles();
 
         for (File file : alertFiles) {
-            if (file.isFile() && file.getName().contains("alert")) {
+            if (file.isFile() && file.getName().contains("groovy")) {
                 alertClass = classLoader.parseClass(file);
                 alertObj = (GroovyObject) alertClass.newInstance();
                 alertClasses.put((String) alertObj.getProperty("name"), alertObj);

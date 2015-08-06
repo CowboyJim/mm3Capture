@@ -15,7 +15,8 @@
         <!--  the default class that has the public static void main(String[]) method -->
         <main.class>org.mm3.MainApp</main.class>
         <application.dist>${project.build.directory}/dist</application.dist>
-        <javafx.lib.ant-javafx.jar>C:\Tools\jdk8\lib\ant-javafx.jar</javafx.lib.ant-javafx.jar>
+        <javafx.lib.ant-javafx.jar>/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/lib/ant-javafx.jar
+        </javafx.lib.ant-javafx.jar>
         <applet.width>1300</applet.width>
         <applet.height>800</applet.height>
         <application.title>Mind Mirror 3 Real Time Capture</application.title>

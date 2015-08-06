@@ -116,6 +116,8 @@ public class MainAppController implements MainController, Observer {
             alertVbox.getChildren().addAll(alarm, label);
             alertUiMap.put(key, alarm);
         }
+
+        comGenerator.addObserver(this);
     }
 
     /**

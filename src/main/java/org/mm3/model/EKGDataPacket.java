@@ -106,7 +106,7 @@ public class EKGDataPacket {
 
         this.rEmg = new SimpleStringProperty(data[16]);
         this.rCh1 = new SimpleStringProperty(data[17]);
-        this.rCh2 = new SimpleStringProperty(data[17]);
+        this.rCh2 = new SimpleStringProperty(data[18]);
         this.rCh3 = new SimpleStringProperty(data[19]);
         this.rCh4 = new SimpleStringProperty(data[20]);
         this.rCh5 = new SimpleStringProperty(data[21]);
