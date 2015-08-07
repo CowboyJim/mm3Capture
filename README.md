@@ -19,7 +19,7 @@
 
 ## Display Panel
 
-![Display Panel](/docs/images/display_panel.tiff?raw=true)
+![Display Panel](https://github.com/CowboyJim/mm3Capture/blob/master/docs/images/capture_panel.jpg)
 
 ## Alerts
 
