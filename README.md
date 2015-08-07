@@ -9,13 +9,13 @@ analyzer. It is a standalone EEG that measures and displays the electrical activ
 
 This application is used to connect to the COM port and read the data packets that are emitted from the device.  The data
 can be displayed on two panels: a display panel which shows the data graphically similar to the LCD display on the device,
-and a capture panel that displays the data in real-time as it is received. 
+and a capture panel that displays the data as it is received. 
 
 ## Capture Panel
 ![Capture Panel](https://github.com/CowboyJim/mm3Capture/blob/master/images/capture_panel.jpg)
 
 The capture panel will display data from the MM3 device as it is received from the COM port. Once the software
-is connected to the COM port and the MM3 is emitting data, the used can start and stop capturing of the data. This
+is connected to the COM port and the MM3 is emitting data, the user can start and stop capturing of the data. This
 function allows the user to investigate the response of brain waves to various stimuli and isolate the data to just
 those samplings that he is interested in. The table can be cleared to repeat the experiment, or the data can be saved
 to a file to view later.  It can also be exported in a CSV format so it can be imported to a spreadsheet. 
@@ -35,7 +35,7 @@ batch script (mm3Capture.bat) that can be used for Windows and a shell script (m
  on your system path. 
    
 ```
-\#/bin/sh
+#/bin/sh
 export LOG_DIR=/tmp
 export LOG_LEVEL=DEBUG
 
@@ -49,10 +49,10 @@ java -jar Mm3Capture.jar -DLOG_DIR=$LOG_DIR -DLOG_LEVEL=$DEBUG > console.log &
 You must configure the application prior to connecting to the MM3 Device. 
 
 * COM Port - all COM ports detected will be listed. Choose the one that the MM3 is connected to
-* Alert Directory - directory where alert class files should be placed. The app will scan this directory for \*.groovy files
+* Alert Directory - directory where alert class files should be placed. The application will scan this directory for *\*.groovy* files
 at startup
-* Capture Directory - directory where all files saved while in the capture panel will be saved. Capture files are stored
-as raw MM3 packets. You may load them into the application, or export them as CSV files
+* Capture Directory - directory where capture panel files will be saved. Capture files are stored
+as raw MM3 packets. You may reload load them into the application or export them as CSV files
 
 ## Alerts
 
@@ -72,7 +72,7 @@ will throw and exception as soon as the first COM packet is sent to the alert fo
 
 ### Writing an alert file
 
-All alerts must implement the `org.mm3.alerts.Alert` Java interface shown below. The files must be written in Groovy---one
+All alerts must implement the `org.mm3.alerts.Alert` Java interface shown below. The files must be written in Groovy--one
 class per file. 
 
 ```java
@@ -84,7 +84,7 @@ public interface Alert {
 }
 ```
 
-The alert will be passed `org.mm3.model.MM3DataPacket` packet each time an event is received. It can examine the packet
+The alert will be passed a `org.mm3.model.MM3DataPacket` packet each time an event is received. It can examine the packet
 and decide whether or not the packet meets to condition that satisfies the implemented logic. The `org.mm3.model.MM3DataPacket`
 class has several methods that can be used to grab all of the data in the packet payload
 
@@ -92,6 +92,8 @@ class has several methods that can be used to grab all of the data in the packet
 * `public int[] getLeftChannelValues()`
 * `public byte[] getByteArray()`
 * `public int[] getIntArray()`
+
+### Example alert file
 
 ```groovy
 import org.mm3.alerts.Alert
@@ -132,6 +134,7 @@ to create the deployment bundle.
 1. The application must synchronize with the MM3 device to find the beginning of valid packets. Logic exists in
 the code to find packet boundaries, but there are times when the sync does not work properly. If the app does not
 recognize the packets even thought the MM3 device is on, follow these steps for now
+
 * Exit the application
 * Turn the MM3 off
 * Start the application
