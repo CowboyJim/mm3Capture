@@ -4,9 +4,11 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
+import org.mm3.alerts.AlertManager;
 import org.mm3.config.AppConfig;
 import org.mm3.config.SpringConfig;
 import org.mm3.data.MM3EventGenerator;
@@ -20,10 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -44,6 +43,9 @@ public class CaptureTablePanelController implements Observer, NestedController {
     private MM3EventGenerator eventGenerator;
     @Autowired
     private SpringConfig springConfig;
+    @Autowired
+    private AlertManager alterManager;
+
     private MainController mainController;
     @Autowired
     private AppConfig appConfig;
@@ -128,6 +130,9 @@ public class CaptureTablePanelController implements Observer, NestedController {
     private TableColumn<EKGDataPacket, String> rCh13;
     @FXML
     private TableColumn<EKGDataPacket, String> rCh14;
+    @FXML
+    private TableColumn<EKGDataPacket, String> triggeredAlerts;
+
 
     @FXML
     private void initialize() {
@@ -162,9 +167,10 @@ public class CaptureTablePanelController implements Observer, NestedController {
         rCh12.setCellValueFactory(cellData -> cellData.getValue().rCh12Property());
         rCh13.setCellValueFactory(cellData -> cellData.getValue().rCh13Property());
         rCh14.setCellValueFactory(cellData -> cellData.getValue().rCh14Property());
+        triggeredAlerts.setCellValueFactory(cellData -> cellData.getValue().alertsTriggeredProperty());
 
 
-      // ekgData.add(new EKGDataPacket(HEADER));
+        // ekgData.add(new EKGDataPacket(HEADER));
 /*       ekgData.add(new EKGDataPacket(1, new byte[]{0x05, (byte) 0x27, (byte) 0x93, (byte) 0x04, (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x03, (byte) 0x1C, (byte) 0x60, (byte) 0x9A,
                 (byte) 0xB3, (byte) 0xCC, (byte) 0xE9, (byte) 0xff, (byte) 0xff, (byte) 0xF1, (byte) 0xD8, (byte) 0xBF, (byte) 0x9A,
                 0x60, (byte) 0x19, (byte) 0x03, (byte) 0x1C, (byte) 0x60, (byte) 0x9A, (byte) 0xB3, (byte) 0xCC, (byte) 0xE9, (byte) 0xff, (byte) 0xff, (byte) 0xF1,
@@ -226,6 +232,37 @@ public class CaptureTablePanelController implements Observer, NestedController {
         });
     }
 
+    protected void setupRowFactory() {
+
+        PseudoClass alert = PseudoClass.getPseudoClass("alert");
+
+/*        ekgDataTable.setRowFactory(tableView -> {
+            TableRow<EKGDataPacket> row = new TableRow<>();
+
+            ChangeListener<Number> changeListener = (obs, oldPrice, newPrice) -> {
+                row.pseudoClassStateChanged(alert, newPrice.doubleValue() > 0);
+
+            };
+
+            row.itemProperty().addListener((obs, previousStock, currentStock) -> {
+                if (previousStock != null) {
+                    previousStock.percentChangeProperty().removeListener(changeListener);
+                }
+                if (currentStock != null) {
+                    currentStock.percentChangeProperty().addListener(changeListener);
+                    row.pseudoClassStateChanged(up, currentStock.getPercentChange() > 0);
+
+                } else {
+                    row.pseudoClassStateChanged(up, false);
+
+                }
+            });
+            return row;
+        });*/
+
+
+    }
+
     @Override
     public void setMainController(MainController controller) {
         this.mainController = controller;
@@ -259,7 +296,26 @@ public class CaptureTablePanelController implements Observer, NestedController {
             if (dataNotPresent.get() == true) {
                 dataNotPresent.set(false);
             }
-            ekgData.add(new EKGDataPacket(MM3DataPacket.getSequenceNum(), ((MM3DataPacket) mm3Packet).getByteArray()));
+            EKGDataPacket packet = new EKGDataPacket(MM3DataPacket.getSequenceNum(), ((MM3DataPacket) mm3Packet).getByteArray());
+
+
+            // check all alerts conditions
+            Map<String, Boolean> alerts = alterManager.checkAlertStatus((MM3DataPacket) mm3Packet);
+
+            StringWriter firedAlerts = new StringWriter();
+            for (String key : alerts.keySet()) {
+
+                boolean triggered = alerts.get(key);
+                if (triggered) {
+                    firedAlerts.append(key);
+                    firedAlerts.append(" ");
+                }
+            }
+
+            // Add fired alerts if any
+            packet.setAlertTriggered(firedAlerts.toString());
+
+            ekgData.add(packet);
         }
     }
 

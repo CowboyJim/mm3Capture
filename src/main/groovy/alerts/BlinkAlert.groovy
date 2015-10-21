@@ -1,3 +1,5 @@
+package alerts
+
 import org.mm3.alerts.Alert
 import org.mm3.model.MM3DataPacket
 
@@ -13,6 +15,10 @@ class BlinkAlert implements Alert {
 
     String getName() {
         "Blink5Alert"
+    }
+
+    String getDisplayColor() {
+        "#82f1b5"
     }
 
     boolean isConditionMet(MM3DataPacket packet) {

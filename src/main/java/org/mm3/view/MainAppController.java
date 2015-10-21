@@ -22,9 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 
 /**
@@ -211,12 +209,12 @@ public class MainAppController implements MainController, Observer {
     public void update(Observable o, Object mm3Packet) {
 
         // check all alerts conditions
-        Map<String, GroovyObject> alerts = alterManager.getAlertClasses();
-        for (String key : alerts.keySet()) {
-            org.mm3.alerts.Alert alert = (org.mm3.alerts.Alert) alerts.get(key);
-            Circle alertImage = alertUiMap.get(key);
+        Map<String, Boolean> alerts = alterManager.checkAlertStatus((MM3DataPacket) mm3Packet);
 
-            boolean triggered = alert.isConditionMet((MM3DataPacket) mm3Packet);
+        for (String key : alerts.keySet()) {
+
+            Circle alertImage = alertUiMap.get(key);
+            boolean triggered = alerts.get(key);
             if (triggered) {
                 alertImage.setFill(Color.web("red"));
             } else {

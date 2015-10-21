@@ -66,3 +66,12 @@
     -fx-text-fill: #242d35;
     -fx-font-size: 14px;
 }
+
+/*
+    Pseudo class 'up' will change the row background
+    color to green when activated
+ */
+.table-row-cell:alert
+{
+    -fx-background-color: #007054;
+}

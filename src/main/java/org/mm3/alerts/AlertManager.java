@@ -3,6 +3,7 @@ package org.mm3.alerts;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
 import org.mm3.config.AppConfig;
+import org.mm3.model.MM3DataPacket;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -24,9 +25,11 @@ public class AlertManager {
     protected AppConfig appConfig;
     protected Map<String, GroovyObject> alertClasses = new HashMap<>();
 
+
     public Map<String, GroovyObject> getAlertClasses() {
         return alertClasses;
     }
+
 
     @PostConstruct
     public void loadAlerts() throws IOException, IllegalAccessException, InstantiationException {
@@ -46,4 +49,19 @@ public class AlertManager {
             }
         }
     }
+
+    public Map<String, Boolean> checkAlertStatus(MM3DataPacket mm3Packet) {
+
+        Map<String, Boolean> status = new HashMap<>();
+
+        // check all alerts conditions
+        for (String key : alertClasses.keySet()) {
+            Alert alert = (Alert) alertClasses.get(key);
+
+            boolean triggered = alert.isConditionMet(mm3Packet);
+            status.put(key, triggered);
+        }
+        return status;
+    }
 }
+

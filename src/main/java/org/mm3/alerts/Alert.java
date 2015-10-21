@@ -13,4 +13,6 @@ public interface Alert {
     String getName();
     boolean isConditionMet(MM3DataPacket packet);
 
+    String getDisplayColor();
+
 }

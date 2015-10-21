@@ -43,6 +43,8 @@ public class EKGDataPacket {
     public StringProperty rCh12;
     public StringProperty rCh13;
     public StringProperty rCh14;
+    public StringProperty alertsTriggered;
+
     protected int packetNum;
     protected byte[] packet;
 
@@ -83,7 +85,6 @@ public class EKGDataPacket {
         this.rCh12 = new SimpleStringProperty(byteToString(data[36]));
         this.rCh13 = new SimpleStringProperty(byteToString(data[37]));
         this.rCh14 = new SimpleStringProperty(byteToString(data[38]));
-
     }
 
     public EKGDataPacket(String[] data) {
@@ -511,5 +512,27 @@ public class EKGDataPacket {
 
     public StringProperty lCh2Property() {
         return lCh2;
+    }
+
+    public String getAlertsTriggered() {
+        return alertsTriggered.get();
+    }
+
+    public void setAlertsTriggered(String alertsTriggered) {
+        this.alertsTriggered.set(alertsTriggered);
+    }
+
+    public StringProperty alertsTriggeredProperty() {
+        return alertsTriggered;
+    }
+
+    public void setAlertTriggered(String alert) {
+        String newValue = null;
+        if (alertsTriggered != null) {
+            newValue = alertsTriggered.getValue() + "," + alert;
+        } else {
+            newValue = alert;
+        }
+        alertsTriggered = new SimpleStringProperty(newValue);
     }
 }
