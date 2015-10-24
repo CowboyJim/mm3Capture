@@ -9,10 +9,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.StrokeType;
+import javafx.stage.FileChooser;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
 import org.mm3.alerts.AlertManager;
 import org.mm3.config.AppConfig;
+import org.mm3.config.SpringConfig;
+import org.mm3.data.FileBasedEventGenerator;
 import org.mm3.data.MM3EventGenerator;
 import org.mm3.model.MM3DataPacket;
 import org.mm3.util.CommonDialogs;
@@ -22,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 import java.net.URI;
 import java.util.*;
 
@@ -49,6 +53,12 @@ public class MainAppController implements MainController, Observer {
     @Autowired
     private AlertManager alterManager;
 
+    @Autowired
+    private SpringConfig springConfig;
+
+    @Autowired
+    private FileBasedEventGenerator fileBasedEventGenerator;
+
     private boolean comConnected = false;
     private Map<String, Circle> alertUiMap = new LinkedHashMap<>();
 
@@ -58,6 +68,8 @@ public class MainAppController implements MainController, Observer {
     private ToggleButton comDisconnectBtn;
     @FXML
     private MenuItem settingsDialog;
+    @FXML
+    private MenuItem playbackDialog;
     @FXML
     private MenuItem closeMenuItem;
     @FXML
@@ -96,6 +108,10 @@ public class MainAppController implements MainController, Observer {
         settingsDialog.setOnAction(event -> {
             ConfigurationDialog dialog = context.getBean(ConfigurationDialog.class, null);
             dialog.showAndWait();
+        });
+
+        playbackDialog.setOnAction(event -> {
+            loadPlaybackFile();
         });
 
         closeMenuItem.setOnAction(event -> {
@@ -222,4 +238,20 @@ public class MainAppController implements MainController, Observer {
             }
         }
     }
+
+    protected void loadPlaybackFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Load File from Disk");
+        File directory = new File(appConfig.getDefaultDirectory());
+        // Create the directory if it doesn't exist
+        if (!directory.exists()) {
+            directory.mkdir();
+        }
+        fileChooser.setInitialDirectory(directory);
+        File file = fileChooser.showOpenDialog(springConfig.getPrimaryStage());
+        if (file != null) {
+            fileBasedEventGenerator.setFile(file);
+        }
+    }
+
 }

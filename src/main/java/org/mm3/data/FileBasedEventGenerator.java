@@ -9,7 +9,7 @@ import java.io.IOException;
 
 /**
  * Simulates connection to MM3 while retreiving recorded MM3 bytes from a file
- * <p/>
+ * <p>
  * Created with IntelliJ IDEA.
  * User: CowboyJim
  * Date: 7/12/15
@@ -17,20 +17,27 @@ import java.io.IOException;
  */
 public class FileBasedEventGenerator extends BaseEventGenerator {
 
-    protected Logger LOG = LoggerFactory.getLogger(FileBasedEventGenerator.class);
-
     public static final int PACKET_SIZE = 39;
-
+    protected Logger LOG = LoggerFactory.getLogger(FileBasedEventGenerator.class);
     protected String fileName;
 
+    protected File file;
     protected int playbackFrequency = 500;
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
     }
 
     public String getFileName() {
         return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public int getPlaybackFrequency() {
@@ -43,7 +50,9 @@ public class FileBasedEventGenerator extends BaseEventGenerator {
 
     public void play() throws IOException {
 
-        File file = new File(fileName);
+        if (file == null) {
+            file = new File(fileName);
+        }
         byte bFile[] = new byte[(int) file.length()];
         FileInputStream fin = new FileInputStream(file);
         fin.read(bFile);

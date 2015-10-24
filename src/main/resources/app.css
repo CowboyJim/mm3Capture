@@ -68,10 +68,10 @@
 }
 
 /*
-    Pseudo class 'up' will change the row background
-    color to green when activated
+    Pseudo class 'alert' will change the row background
+    color to salmon when activated
  */
 .table-row-cell:alert
 {
-    -fx-background-color: #007054;
+    -fx-background-color: #FFA07A;
 }

@@ -230,37 +230,32 @@ public class CaptureTablePanelController implements Observer, NestedController {
         saveDataMenu.setOnAction(event -> {
             saveTableDataToFile();
         });
+
+        setupRowFactory();
     }
 
+    /**
+     * Change the row color whenever an alert is fired
+     */
     protected void setupRowFactory() {
 
         PseudoClass alert = PseudoClass.getPseudoClass("alert");
 
-/*        ekgDataTable.setRowFactory(tableView -> {
+        ekgDataTable.setRowFactory(tableView -> {
             TableRow<EKGDataPacket> row = new TableRow<>();
 
-            ChangeListener<Number> changeListener = (obs, oldPrice, newPrice) -> {
-                row.pseudoClassStateChanged(alert, newPrice.doubleValue() > 0);
+            row.itemProperty().addListener((obs, previousAlert, currentAlert) -> {
 
-            };
-
-            row.itemProperty().addListener((obs, previousStock, currentStock) -> {
-                if (previousStock != null) {
-                    previousStock.percentChangeProperty().removeListener(changeListener);
-                }
-                if (currentStock != null) {
-                    currentStock.percentChangeProperty().addListener(changeListener);
-                    row.pseudoClassStateChanged(up, currentStock.getPercentChange() > 0);
+                if (currentAlert != null) {
+                    row.pseudoClassStateChanged(alert, ((EKGDataPacket) currentAlert).getAlertsTriggered().length() > 0);
 
                 } else {
-                    row.pseudoClassStateChanged(up, false);
+                    row.pseudoClassStateChanged(alert, false);
 
                 }
             });
             return row;
-        });*/
-
-
+        });
     }
 
     @Override
