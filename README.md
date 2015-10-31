@@ -129,15 +129,3 @@ class BlinkAlert implements Alert {
 The application can be built using Maven. The POM file includes the profile *deploy_build* which should be used
 to create the deployment bundle.
 
-## Known Issues
-
-1. The application must synchronize with the MM3 device to find the beginning of valid packets. Logic exists in
-the code to find packet boundaries, but there are times when the sync does not work properly. If the app does not
-recognize the packets even thought the MM3 device is on, follow these steps for now
-
-* Exit the application
-* Turn the MM3 off
-* Start the application
-* Connect to the COM port
-* Turn the MM3 on
-
