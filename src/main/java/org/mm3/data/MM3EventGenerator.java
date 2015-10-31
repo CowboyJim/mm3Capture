@@ -31,6 +31,8 @@ public class MM3EventGenerator extends BaseEventGenerator {
      */
     public void connectToSerialPort(AppConfig serialConfig) throws SerialPortException {
 
+        parser.reset();
+
         if (!connectedToSerial) {
             serialPort = new SerialPort(serialConfig.getPortID());
             serialPort.openPort();

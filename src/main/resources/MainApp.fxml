@@ -19,11 +19,25 @@
               <content>
                 <VBox prefHeight="-1.0" prefWidth="100.0" spacing="5.0" styleClass="alert-hbox">
                   <children>
-                    <HBox fx:id="alertVbox" prefHeight="-1.0" prefWidth="1191.0" spacing="10.0">
+                      <HBox>
+                          <HBox fx:id="alertVbox" prefHeight="-1.0" prefWidth="700.0" spacing="10.0">
                       <padding>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                       </padding>
                     </HBox>
+                          <!--                    <HBox fx:id="mediaControlComp" prefWidth="700" spacing="10.0" alignment="CENTER_RIGHT">
+                                                  <padding>
+                                                      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                  </padding>
+                                                <SegmentedButton fx:id="mediaControls" styleClass="SegmentedButton.STYLE_CLASS_DARK">
+                                                  <buttons>
+                                                      <ToggleButton text="Rewind" />
+                                                    <ToggleButton text="Play" />
+                                                    <ToggleButton text="Pause" selected="true"/>
+                                                  </buttons>
+                                                </SegmentedButton>
+                                              </HBox>-->
+                      </HBox>
                   </children>
                   <padding>
                     <Insets left="5.0" />
@@ -73,7 +87,7 @@
                 <Menu mnemonicParsing="false" text="File">
                   <items>
                     <MenuItem fx:id="settingsDialog" mnemonicParsing="false" text="Settings..." />
-                    <MenuItem fx:id="playbackDialog" mnemonicParsing="false" text="Playback saved file..."/>
+                      <!--                    <MenuItem fx:id="playbackDialog" mnemonicParsing="false" text="Playback saved file..."/>-->
                     <MenuItem fx:id="exportMenuItem" mnemonicParsing="false" text="Export..." />
                     <MenuItem id="closeMenuItem" fx:id="closeMenuItem" mnemonicParsing="false" text="Close">
                       <accelerator>
@@ -108,14 +122,17 @@
                   </fx:define>
                   <children>
                     <Separator orientation="VERTICAL" prefHeight="200.0" />
-                    <ToggleButton fx:id="comConnectBtn" mnemonicParsing="false" text="Connect">
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="comToggleGroup" />
-                                 </toggleGroup></ToggleButton>
+                      <ToggleButton fx:id="comConnectBtn" mnemonicParsing="false" text="Connect"
+                                    toggleGroup="$comToggleGroup"/>
                     <ToggleButton fx:id="comDisconnectBtn" mnemonicParsing="false" selected="true" text="Disconnect" toggleGroup="$comToggleGroup" />
                     <Separator orientation="VERTICAL" prefHeight="200.0" />
                     <Label text="Connect to Serial Port:" />
                     <Label fx:id="currentPortID" text="Unknown" />
+
+                      <!--                    <Button layoutX="51.0" layoutY="74.0" mnemonicParsing="false" >
+                                            <Glyph layoutX="80.0" layoutY="79.0" fontFamily="FontAwesome" icon="GEAR"/>
+                                          </Button>-->
+
                   </children>
                   <padding>
                     <Insets bottom="5.0" left="10.0" right="20.0" top="5.0" />

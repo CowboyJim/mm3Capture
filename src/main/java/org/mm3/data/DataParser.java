@@ -9,4 +9,6 @@ public interface DataParser {
 
     void setPacketListener(MM3PacketListener listener);
     void parseData(byte[] bytes);
+
+    void reset();
 }

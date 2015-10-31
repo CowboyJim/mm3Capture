@@ -90,6 +90,8 @@ public class MainAppController implements MainController, Observer {
     private CaptureTablePanelController captureTablePanelController;
     @FXML
     private VisualPanelController visualPanelController;
+    @FXML
+    private ToggleGroup comToggleGroup;
 
     public TabPane getTabPane() {
         return tabPane;
@@ -97,12 +99,16 @@ public class MainAppController implements MainController, Observer {
 
     @FXML
     private void initialize() {
-        comConnectBtn.setOnAction(event -> {
-            toggleComPort(true);
-        });
 
-        comDisconnectBtn.setOnAction(event -> {
-            toggleComPort(false);
+        comToggleGroup.selectedToggleProperty().addListener((ov, toggle, new_toggle) -> {
+
+            if (new_toggle != null) {
+                if (((ToggleButton) new_toggle).getId().equals("comConnectBtn")) {
+                    toggleComPort(true);
+                } else {
+                    toggleComPort(false);
+                }
+            }
         });
 
         settingsDialog.setOnAction(event -> {
@@ -110,9 +116,9 @@ public class MainAppController implements MainController, Observer {
             dialog.showAndWait();
         });
 
-        playbackDialog.setOnAction(event -> {
+/*        playbackDialog.setOnAction(event -> {
             loadPlaybackFile();
-        });
+        });*/
 
         closeMenuItem.setOnAction(event -> {
             Platform.exit();
@@ -167,6 +173,8 @@ public class MainAppController implements MainController, Observer {
      */
     private void toggleComPort(boolean connect) {
         LOG.debug("Com port connect: " + connect);
+
+        if (comConnected == connect) return;
 
         if (connect) {
             try {

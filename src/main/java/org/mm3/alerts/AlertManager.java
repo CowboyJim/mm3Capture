@@ -45,7 +45,9 @@ public class AlertManager {
             if (file.isFile() && file.getName().contains("groovy")) {
                 alertClass = classLoader.parseClass(file);
                 alertObj = (GroovyObject) alertClass.newInstance();
-                alertClasses.put((String) alertObj.getProperty("name"), alertObj);
+                if (alertObj instanceof Alert) {
+                    alertClasses.put((String) alertObj.getProperty("name"), alertObj);
+                }
             }
         }
     }

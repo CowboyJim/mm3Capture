@@ -184,7 +184,7 @@ public class ByteRingBuffer {
      * @return
      */
     public byte getByteAt(int index) {
-        if (getUsed() < index) {
+        if (getUsed() <= index) {
             return -1;
         }
         return rBuf[(rBufPos + index) % rBufSize];

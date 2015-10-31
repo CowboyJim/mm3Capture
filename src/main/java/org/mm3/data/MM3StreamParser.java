@@ -2,6 +2,10 @@ package org.mm3.data;
 
 import org.mm3.model.MM3DataPacket;
 import org.mm3.util.ByteRingBuffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.StringWriter;
 
 /**
  * Created by CowboyJim on 7/8/15.
@@ -14,9 +18,10 @@ public class MM3StreamParser implements DataParser {
      * All EKG data packet are 39 bytes.
      */
     private static final int EKG_PACKET_SIZE = 39;
-    protected static ByteRingBuffer buffer = new ByteRingBuffer(256);
+    private static final int BUFFER_SIZE = 128;
+    protected static ByteRingBuffer buffer = new ByteRingBuffer(BUFFER_SIZE);
+    protected Logger LOG = LoggerFactory.getLogger(MM3StreamParser.class);
     protected byte currentSyncByte = -1;
-
     protected MM3PacketListener listener;
 
     @Override
@@ -29,8 +34,14 @@ public class MM3StreamParser implements DataParser {
      */
     public void parseData(byte[] bytes) {
 
+        if (buffer.getUsed() == BUFFER_SIZE) {
+            buffer.discard(bytes.length);
+            LOG.debug("Discarding data. Buffer size: " + buffer.getUsed());
+        }
+
         // Write packet to buffer
         buffer.write(bytes);
+
 
         // Send packets to listener until the buffer has no more packets
         while (buffer.getUsed() > 0) {
@@ -42,6 +53,14 @@ public class MM3StreamParser implements DataParser {
                 listener.packetReceived(packet);
             }
         }
+    }
+
+    @Override
+    public void reset() {
+
+        currentSyncByte = -1;
+        buffer.clear();
+        LOG.debug("Reset Buffer");
     }
 
     /**
@@ -59,9 +78,16 @@ public class MM3StreamParser implements DataParser {
         }
         int packetLength = buffer.getByteAt(1);
 
+        // Make sure this is a data packate we care about, otherwise discard
         if (packetLength != EKG_PACKET_SIZE) {
-            buffer.discard(packetLength);
-            currentSyncByte = flipSyncByte(currentSyncByte);
+
+            if (packetLength > 0) {
+                LOG.debug("Discarding packet of length: " + packetLength);
+                buffer.discard(packetLength);
+            }
+            LOG.debug("Forcing re-sync");
+            currentSyncByte = -1;
+
             return null;
         }
 
@@ -90,6 +116,15 @@ public class MM3StreamParser implements DataParser {
                     currentSyncByte = buffer.getByteAt(syncIndex);
                     // Throw away the incomplete bytes at the head of the buffer
                     buffer.discard(syncIndex);
+
+                    if (LOG.isDebugEnabled()) {
+
+                        StringWriter sw = new StringWriter();
+                        sw.append("Valid packet was found. Current sync byte: ");
+                        sw.append(Byte.toString(currentSyncByte));
+                        sw.append(" Buffer size: " + buffer.getUsed());
+                        LOG.debug(sw.toString());
+                    }
                     return true;
                 }
             }
